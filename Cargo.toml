@@ -1,0 +1,10 @@
+[package]
+name = "ngdl_rust"
+version = "0.1.0"
+authors = ["Fabian Richardt <f.richardt@t-online.de>"]
+edition = "2018"
+
+[dependencies]
+gnuplot = "0.0.32"
+# itertools = "0.8.0"
+rayon = "1.2.0"
