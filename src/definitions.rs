@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter, Error};
+
 pub type Function1D = fn(x: f64) -> f64;
 
 pub struct Interval {
@@ -23,5 +25,16 @@ impl Interval {
 
     pub fn span(&self) -> f64 {
         (self.start - self.end).abs()
+    }
+}
+
+impl Display for Interval {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        f.write_str("[")?;
+        f.write_str(&self.start().to_string())?;
+        f.write_str(", ")?;
+        f.write_str(&self.end().to_string())?;
+        f.write_str("]")?;
+        Ok(())
     }
 }
