@@ -6,5 +6,8 @@
 Just replace the task name with the correct filename for the current task.
 
 # Folder layout
-* Plots and other images for a task are gnerated in a img_{taskname} folder.
+* Plots and other images for a task are generated in a img_{taskname} folder.
 * I'll put the task output along with the generated images into the results folder as well. That way you can look a them without running the tasks.
+
+# Implemented Tasks
+* Task 1, Subtask 1: ``cargo run --example task01``
