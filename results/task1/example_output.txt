@@ -1,0 +1,18 @@
+Integrating ln(x) on the interval [1, 10]
+Exact solution: 14.02585092994046
+
+Doing a testrun with method trapezoid
+	Final approximation: 14.025699066313107 with absolute error: 1.518636273534213e-4
+	Mean numerical convergence order: 1.9910311007590205
+	Saved plot to ./img_task01/trapezoid.png
+
+Doing a testrun with method kepler
+	Final approximation: 14.025850927097705 with absolute error: 2.8427553644405634e-9
+	Mean numerical convergence order: 3.942645257697681
+	Saved plot to ./img_task01/kepler.png
+
+Doing a testrun with method newton
+	Final approximation: 14.02585092867691 with absolute error: 1.2635510415748286e-9
+	Mean numerical convergence order: 3.9481695609672265
+	Saved plot to ./img_task01/newton.png
+
