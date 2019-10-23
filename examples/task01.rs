@@ -19,17 +19,17 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Integrating ln(x) on the interval {}", interval);
     println!("Exact solution: {}\n", exact);
 
-    evaluate_quadrature_method(trapezoid_formula, &interval, f, exact, "trapezoid");
-    evaluate_quadrature_method(kepler_formula, &interval, f, exact, "kepler");
-    evaluate_quadrature_method(newton_three_eight_formula, &interval, f, exact, "newton");
+    evaluate_quadrature_method(trapezoid_formula, interval, f, exact, "trapezoid");
+    evaluate_quadrature_method(kepler_formula, interval, f, exact, "kepler");
+    evaluate_quadrature_method(newton_three_eight_formula, interval, f, exact, "newton");
 
     Ok(())
 }
 
-fn evaluate_quadrature_method(method: QuadratureFormula, interval: &Interval, f: Function1D, exact: f64, name: &str) {
+fn evaluate_quadrature_method(method: QuadratureFormula, interval: Interval, f: Function1D, exact: f64, name: &str) {
     println!("Doing a testrun with method {}", name);
 
-    let test_data = quadrature_test_run(method, f, exact, &interval, 200);
+    let test_data = quadrature_test_run(method, f, exact, interval, 200);
 
     let ps: Vec<f64> = test_data.par_iter().zip(test_data.par_iter().skip(1)).map(|(a, b)| get_convergence_order(a, b)).collect();
     let p_sum: f64 = ps.iter().sum();

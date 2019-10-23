@@ -4,6 +4,7 @@
 * Tasks are in the examples folder. You can run one with e.g.
 ``cargo run --example task01``.
 Just replace the task name with the correct filename for the current task.
+* Documentation for the code can be generated automatically with ``cargo doc --open``. Hopefully by documenting that possibility I'll actually write documentation comments...
 
 # Folder layout
 * Plots and other images for a task are generated in a img_{taskname} folder.
@@ -11,3 +12,4 @@ Just replace the task name with the correct filename for the current task.
 
 # Implemented Tasks
 * Task 1, Subtask 1: ``cargo run --example task01``
+* Task 2, Subtask 5: ``cargo run --example task02_5``
