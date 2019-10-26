@@ -38,5 +38,7 @@ pub fn explicit_euler(ivp: InitialValueProblem, h: f64, t_target: f64) -> f64 {
 
 /// Runs the explicit euler method for all supplied h in parallel.
 pub fn explicit_euler_test_run(ivp: InitialValueProblem, h: &[f64], t_target: f64) -> Vec<f64> {
-    h.par_iter().map(|h| explicit_euler(ivp, *h, t_target)).collect()
+    h.par_iter()
+        .map(|h| explicit_euler(ivp, *h, t_target))
+        .collect()
 }

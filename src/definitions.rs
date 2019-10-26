@@ -1,4 +1,4 @@
-use std::fmt::{Display, Formatter, Error};
+use std::fmt::{Display, Error, Formatter};
 
 /// Type alias for a R -> R function.
 pub type Function1D = fn(x: f64) -> f64;
@@ -15,10 +15,7 @@ pub struct Interval {
 
 impl Interval {
     pub fn new(a: f64, b: f64) -> Self {
-        Interval {
-            start: a,
-            end: b,
-        }
+        Interval { start: a, end: b }
     }
 
     pub fn start(&self) -> f64 {
@@ -52,17 +49,41 @@ impl Display for Interval {
 pub struct InitialValueProblem {
     pub start_time: f64,
     pub start_value: f64,
-    pub df: Function2D
+    pub df: Function2D,
 }
 
 impl InitialValueProblem {
-    pub fn new(start_time: f64,
-               start_value: f64,
-               df: Function2D) -> InitialValueProblem {
+    pub fn new(start_time: f64, start_value: f64, df: Function2D) -> InitialValueProblem {
         InitialValueProblem {
             start_time,
             start_value,
-            df
+            df,
+        }
+    }
+}
+
+/// Problem like in task 2 subtask 4.
+/// Likely will become more complex over time.
+#[derive(Copy, Clone, Debug)]
+pub struct BoundaryValueProblem {
+    pub ddf: Function1D,
+    pub interval: Interval,
+    pub start_value: f64,
+    pub end_value: f64,
+}
+
+impl BoundaryValueProblem {
+    pub fn new(
+        ddf: Function1D,
+        interval: Interval,
+        start_value: f64,
+        end_value: f64,
+    ) -> BoundaryValueProblem {
+        BoundaryValueProblem {
+            ddf,
+            interval,
+            start_value,
+            end_value,
         }
     }
 }
