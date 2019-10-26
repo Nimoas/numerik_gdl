@@ -1,0 +1,15 @@
+Absolute error for h=2^1=0.5 is 5e-1
+Absolute error for h=2^2=0.25 is 3.59375e-1
+Absolute error for h=2^3=0.125 is 2.3381952044834975e-1
+Absolute error for h=2^4=0.0625 is 1.388975423079717e-1
+Absolute error for h=2^5=0.03125 is 7.695797334038401e-2
+Absolute error for h=2^6=0.015625 is 4.0734233237973205e-2
+Absolute error for h=2^7=0.0078125 is 2.0990801940010018e-2
+Absolute error for h=2^8=0.00390625 is 1.0659841876193843e-2
+Absolute error for h=2^9=0.001953125 is 5.372171130054504e-3
+Absolute error for h=2^10=0.0009765625 is 2.6967956752326216e-3
+Absolute error for h=2^11=0.00048828125 is 1.3510941399430543e-3
+Absolute error for h=2^12=0.000244140625 is 6.762235134061267e-4
+Absolute error for h=2^13=0.0001220703125 is 3.3828116489020843e-4
+Absolute error for h=2^14=0.00006103515625 is 1.6918297172918706e-4
+Absolute error for h=2^15=0.000030517578125 is 8.460208783844791e-5

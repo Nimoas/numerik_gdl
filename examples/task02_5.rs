@@ -2,8 +2,6 @@ use ngdl_rust::definitions::InitialValueProblem;
 use ngdl_rust::euler_explicit::explicit_euler_test_run;
 use std::error::Error;
 
-const IMAGE_DIR: &str = "./img_task02_5/";
-
 fn main() -> Result<(), Box<dyn Error>> {
     // t is ignored
     let ivp = InitialValueProblem::new(0.0, 1.0, |_, x| x * x);
