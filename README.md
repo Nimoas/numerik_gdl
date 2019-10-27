@@ -4,6 +4,7 @@
 * Tasks are in the examples folder. You can run one with e.g.
 ``cargo run --example task01``.
 Just replace the task name with the correct filename for the current task.
+* If a computation takes too long, try adding a ``--release`` to ``cargo run``. Speedup of that can easily be several orders of magnitude.
 * Documentation for the code can be generated automatically with ``cargo doc --open``. Hopefully by documenting that possibility I'll actually write documentation comments...
 * Tests are executed with ``cargo test``. At the moment that is only the examples from the documentation, though.
 

@@ -1,8 +1,10 @@
+use gnuplot::Coordinate::Graph;
 use gnuplot::PlotOption::{Caption, Color};
 use gnuplot::{AxesCommon, Figure};
 use ngdl_rust::definitions::InitialValueProblem;
 use ngdl_rust::euler_explicit::explicit_euler_test_run;
 use std::error::Error;
+use std::f64::consts::E;
 use std::fs::create_dir_all;
 use std::ops::Add;
 
@@ -25,6 +27,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let abs_errors: Vec<f64> = approximations.iter().map(|x| (exact - *x).abs()).collect();
 
+    // This comes from the formula on task 6.
+    // |f| = 2 and |f'| = 4 on the interval.
+    let error_bounds: Vec<f64> = hs.iter().map(|h| 2.0 * (E.powi(2) - 1.0) * *h).collect();
+
     hs.iter()
         .zip(ks)
         .map(|(h, k)| format!("Absolute error for h=2^{}={}", k, h))
@@ -36,10 +42,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     fg.axes2d()
         .set_y_log(Some(10.0))
         .set_x_log(Some(10.0))
-        .points(
+        .set_legend(Graph(1.0), Graph(0.15), &[], &[])
+        .lines_points(
             &hs,
             &abs_errors,
             &[Caption("Absolute error of the approximation"), Color("red")],
+        )
+        .lines_points(
+            &hs,
+            &error_bounds,
+            &[
+                Caption("Theoretical upper bound of the error"),
+                Color("black"),
+            ],
         );
     fg.save_to_png(&filename, 600, 400)
         .expect("Unable to save file");
