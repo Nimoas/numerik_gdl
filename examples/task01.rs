@@ -1,6 +1,7 @@
 use gnuplot::PlotOption::{Caption, Color};
 use gnuplot::{AxesCommon, Figure};
 use ngdl_rust::definitions::{Function1D, Interval};
+use ngdl_rust::ln;
 use ngdl_rust::quadrature::{
     get_convergence_order, kepler_formula, newton_three_eight_formula, quadrature_test_run,
     trapezoid_formula, QuadratureFormula,
@@ -16,8 +17,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     create_dir_all(IMAGE_DIR)?;
 
     let interval = Interval::new(1.0, 10.0);
-    let f: Function1D = |x| x.ln();
-    let exact: f64 = 10.0 * (10.0f64).ln() - 9.0;
+    let f: Function1D = |x| ln!(x);
+    let exact: f64 = 10.0 * ln!(10.0f64) - 9.0;
 
     println!("Integrating ln(x) on the interval {}", interval);
     println!("Exact solution: {}\n", exact);

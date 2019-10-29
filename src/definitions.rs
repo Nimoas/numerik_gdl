@@ -1,3 +1,4 @@
+use crate::abs;
 use std::fmt::{Display, Error, Formatter};
 
 /// Type alias for a R -> R function.
@@ -28,7 +29,7 @@ impl Interval {
 
     /// Returns the absolute difference between the start and end of the interval.
     pub fn span(&self) -> f64 {
-        (self.start - self.end).abs()
+        abs!(self.start - self.end)
     }
 }
 

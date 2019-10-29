@@ -1,5 +1,6 @@
 use crate::definitions::{Function1D, Interval};
 use crate::util::make_supporting_points;
+use crate::{abs, ln};
 use rayon::prelude::*;
 
 #[derive(Debug, Copy, Clone)]
@@ -73,7 +74,7 @@ pub fn quadrature_test_run(
             let value = quadrature(method, f, interval, n);
             QuadratureTestResult {
                 value,
-                abs_error: (exact - value).abs(),
+                abs_error: abs!(exact - value),
                 splits_n: n,
                 h: interval.span() / n as f64,
             }
@@ -94,5 +95,5 @@ fn quadrature_with_supporting_points(
 }
 
 pub fn get_convergence_order(run1: &QuadratureTestResult, run2: &QuadratureTestResult) -> f64 {
-    (run2.abs_error.ln() - run1.abs_error.ln()) / (run2.h.ln() - run1.h.ln())
+    (ln!(run2.abs_error) - ln!(run1.abs_error)) / (ln!(run2.h) - ln!(run1.h))
 }

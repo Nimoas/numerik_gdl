@@ -1,6 +1,7 @@
 use gnuplot::Coordinate::Graph;
 use gnuplot::PlotOption::{Caption, Color};
 use gnuplot::{AxesCommon, Figure};
+use ngdl_rust::abs;
 use ngdl_rust::definitions::InitialValueProblem;
 use ngdl_rust::euler_explicit::explicit_euler_test_run;
 use std::error::Error;
@@ -25,10 +26,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let approximations = explicit_euler_test_run(ivp, &hs, 0.5);
 
-    let abs_errors: Vec<f64> = approximations.iter().map(|x| (exact - *x).abs()).collect();
+    let abs_errors: Vec<f64> = approximations.iter().map(|x| abs!(exact - *x)).collect();
 
     // This comes from the formula on task 6.
     // |f| = 2 and |f'| = 4 on the interval.
+    // Note: seems that was wrong, |f| also 4.
     let error_bounds: Vec<f64> = hs.iter().map(|h| 2.0 * (E.powi(2) - 1.0) * *h).collect();
 
     hs.iter()

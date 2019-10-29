@@ -8,3 +8,17 @@ pub fn make_supporting_points(n: usize, interval: Interval) -> Vec<f64> {
     pts.push(interval.end());
     pts
 }
+
+#[macro_export]
+macro_rules! abs {
+    ($name: expr) => {
+        $name.abs()
+    };
+}
+
+#[macro_export]
+macro_rules! ln {
+    ($name: expr) => {
+        $name.ln()
+    };
+}

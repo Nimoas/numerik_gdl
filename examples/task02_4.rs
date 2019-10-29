@@ -1,5 +1,6 @@
 use gnuplot::PlotOption::{Caption, Color};
 use gnuplot::{AxesCommon, Figure};
+use ngdl_rust::abs;
 use ngdl_rust::definitions::{BoundaryValueProblem, Function1D, Interval};
 use ngdl_rust::finite_differences_method::solve_bvp;
 use ngdl_rust::util::make_supporting_points;
@@ -27,7 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let abs_error: Vec<f64> = exact
         .iter()
         .zip(&solution)
-        .map(|(x, y)| (x - y).abs())
+        .map(|(x, y)| abs!(x - y))
         .collect();
 
     let filename = String::from(IMAGE_DIR).add("plot.png");
