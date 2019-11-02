@@ -3,7 +3,7 @@ use gnuplot::PlotOption::{Caption, Color, LineWidth};
 use gnuplot::TickOption::Format;
 use gnuplot::{AxesCommon, Figure};
 use ngdl_rust::definitions::{
-    Function1D, Function2D, InitialValueProblem, Point2D, SimpleDifferentiableFunction2D,
+    Function1D, Function2D, InitialValueProblem, Point2D, SimpleDifferentiableFunction,
 };
 use ngdl_rust::euler_explicit::explicit_euler_interval_test_run;
 use ngdl_rust::implicit_euler::implicit_euler_interval_test_run;
@@ -33,14 +33,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // t is ignored
     let ivp: InitialValueProblem<Function2D> =
-        InitialValueProblem::new(0.0, 1.0, |x, y| -1000.0 * y + 1000.0 * sin!(x) + cos!(x));
-    let ivp_implicit: InitialValueProblem<SimpleDifferentiableFunction2D> =
+        InitialValueProblem::new(0.0, 1.0, |(x, y)| -1000.0 * y + 1000.0 * sin!(x) + cos!(x));
+    let ivp_implicit: InitialValueProblem<SimpleDifferentiableFunction<(f64, f64)>> =
         InitialValueProblem::new(
             0.0,
             1.0,
-            SimpleDifferentiableFunction2D::new(
-                |t, x| -1000.0 * x + 1000.0 * sin!(t) + cos!(t),
-                |_, _| -1000.0,
+            SimpleDifferentiableFunction::new(
+                |(t, x)| -1000.0 * x + 1000.0 * sin!(t) + cos!(t),
+                |(_, _)| -1000.0,
             ),
         );
 

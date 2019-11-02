@@ -3,7 +3,7 @@ use rayon::prelude::*;
 
 /// Simple implementation of the step taken during the explicit euler function.
 fn explicit_euler_step(df: Function2D, t: f64, last_value: f64, h: f64) -> f64 {
-    last_value + h * df(t, last_value)
+    last_value + h * df((t, last_value))
 }
 
 /// Simple implementation of the explicit euler method.
@@ -20,7 +20,7 @@ fn explicit_euler_step(df: Function2D, t: f64, last_value: f64, h: f64) -> f64 {
 /// use ngdl_rust::definitions::{InitialValueProblem, Function2D};
 /// use ngdl_rust::euler_explicit::explicit_euler;
 ///
-/// let ivp: InitialValueProblem<Function2D> = InitialValueProblem::new(0.0, 1.0, |_, x| x*x);
+/// let ivp: InitialValueProblem<Function2D> = InitialValueProblem::new(0.0, 1.0, |(_, x)| x*x);
 /// dbg!(explicit_euler(ivp, 0.001, 1.0));
 /// ```
 pub fn explicit_euler(ivp: InitialValueProblem<Function2D>, h: f64, t_target: f64) -> f64 {

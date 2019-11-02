@@ -1,11 +1,11 @@
 use crate::definitions::{
-    ClosureDifferentiableFunction2D, InitialValueProblem, Point2D, SimpleDifferentiableFunction2D,
+    ClosureDifferentiableFunction, InitialValueProblem, Point2D, SimpleDifferentiableFunction,
 };
 use crate::newton_method::newton_method;
 use rayon::prelude::*;
 
 pub fn implicit_euler(
-    ivp: InitialValueProblem<SimpleDifferentiableFunction2D>,
+    ivp: InitialValueProblem<SimpleDifferentiableFunction<(f64, f64)>>,
     h: f64,
     t_target: f64,
 ) -> f64 {
@@ -16,7 +16,7 @@ pub fn implicit_euler(
 }
 
 pub fn implicit_euler_interval(
-    ivp: InitialValueProblem<SimpleDifferentiableFunction2D>,
+    ivp: InitialValueProblem<SimpleDifferentiableFunction<(f64, f64)>>,
     h: f64,
     t_target: f64,
     skip_n: isize,
@@ -46,22 +46,29 @@ pub fn implicit_euler_interval(
     vals
 }
 
-fn implicit_euler_step(df: SimpleDifferentiableFunction2D, t: f64, val: f64, h: f64) -> f64 {
+fn implicit_euler_step(
+    df: SimpleDifferentiableFunction<(f64, f64)>,
+    t: f64,
+    val: f64,
+    h: f64,
+) -> f64 {
     let to_solve =
-        |t: f64, x: f64, (last, delta, g): (f64, f64, SimpleDifferentiableFunction2D)| {
-            last + delta * (g.f)(t, x) - x
+        |(t, x), (last, delta, g): (f64, f64, SimpleDifferentiableFunction<(f64, f64)>)| {
+            last + delta * (g.f)((t, x)) - x
         };
     let to_solve_derivative =
-        |t: f64, x: f64, (_, delta, g): (f64, f64, SimpleDifferentiableFunction2D)| {
-            delta * (g.df)(t, x) - 1.0
+        |(t, x), (_, delta, g): (f64, f64, SimpleDifferentiableFunction<(f64, f64)>)| {
+            delta * (g.df)((t, x)) - 1.0
         };
-    let func: ClosureDifferentiableFunction2D<(f64, f64, SimpleDifferentiableFunction2D)> =
-        ClosureDifferentiableFunction2D::new((val, h, df), to_solve, to_solve_derivative);
+    let func: ClosureDifferentiableFunction<
+        (f64, f64),
+        (f64, f64, SimpleDifferentiableFunction<(f64, f64)>),
+    > = ClosureDifferentiableFunction::new((val, h, df), to_solve, to_solve_derivative);
     newton_method(func, t, val, 0.001 * h)
 }
 
 pub fn implicit_euler_interval_test_run(
-    ivp: InitialValueProblem<SimpleDifferentiableFunction2D>,
+    ivp: InitialValueProblem<SimpleDifferentiableFunction<(f64, f64)>>,
     h: &[f64],
     t_target: f64,
     skip_n: isize,
