@@ -22,3 +22,24 @@ macro_rules! ln {
         $name.ln()
     };
 }
+
+#[macro_export]
+macro_rules! sin {
+    ($name: expr) => {
+        $name.sin()
+    };
+}
+
+#[macro_export]
+macro_rules! cos {
+    ($name: expr) => {
+        $name.cos()
+    };
+}
+
+#[macro_export]
+macro_rules! exp {
+    ($name: expr) => {
+        E.powf($name)
+    };
+}

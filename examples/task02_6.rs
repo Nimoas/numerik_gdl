@@ -2,7 +2,7 @@ use gnuplot::Coordinate::Graph;
 use gnuplot::PlotOption::{Caption, Color};
 use gnuplot::{AxesCommon, Figure};
 use ngdl_rust::abs;
-use ngdl_rust::definitions::InitialValueProblem;
+use ngdl_rust::definitions::{Function2D, InitialValueProblem};
 use ngdl_rust::euler_explicit::explicit_euler_test_run;
 use std::error::Error;
 use std::f64::consts::E;
@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // y(x) = 1 / (1 - x) for x = 1/2
     let exact = 2.0f64;
     // t is ignored
-    let ivp = InitialValueProblem::new(0.0, 1.0, |_, x| x * x);
+    let ivp: InitialValueProblem<Function2D> = InitialValueProblem::new(0.0, 1.0, |_, x| x * x);
 
     // Only three samples is kinda boring, if we use a computer anyway...
     let hs: Vec<f64> = ks.clone().map(|n| 1.0 / ((2.0f64).powi(n))).collect();
