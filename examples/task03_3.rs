@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // y(x) = 1 / (1 - x) for x = 1/2
     let exact: Function1D = |x| sin!(x) + (1.0 / exp!(1000.0 * x));
-    let exact_samples = 100000;
+    let exact_samples = 10000;
     let exact_sampled = sample_function(exact, Interval::new(0.0, 10.0), exact_samples);
 
     // t is ignored

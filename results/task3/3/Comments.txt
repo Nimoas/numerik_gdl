@@ -1,0 +1,10 @@
+On the explicit euler method results:
+* The problem seems to be stiff, since the approximations are completely unstable.
+* h = 0.001 is the first h to produce usable results.
+* All other h either oscilate around the exact result or diverge at some point.
+(* That doesn't yet mention h=0.01 where we end at NaNs...)
+
+On the implicit euler methods:
+* Implicit methods handle stiff problems much better. Thus all h give usable results.
+* Takes a lot longer to compute, esp. if we pick even smaller h.
+* Approximation has a phase-difference to the exact solution that corresponds to h.

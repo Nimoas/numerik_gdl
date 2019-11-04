@@ -1,5 +1,7 @@
 use crate::definitions::{Closure1D, Function1D, Interval, Point2D};
 
+/// Takes the interval and splits it into n sub-intervals.
+/// Returns the resulting n+1 boundary points.
 pub fn make_supporting_points(n: usize, interval: Interval) -> Vec<f64> {
     let h = interval.span() / n as f64;
     let mut pts: Vec<f64> = (0..n)
@@ -9,13 +11,14 @@ pub fn make_supporting_points(n: usize, interval: Interval) -> Vec<f64> {
     pts
 }
 
+/// Samples the function at `n_samples` equidistant points on the interval.
 pub fn sample_closure<T: Copy>(
     f: Closure1D<T>,
     interval: Interval,
     n_samples: usize,
     data: T,
 ) -> Vec<Point2D> {
-    make_supporting_points(n_samples, interval)
+    make_supporting_points(n_samples - 1, interval)
         .iter()
         .map(|x| Point2D {
             x: *x,
@@ -24,6 +27,7 @@ pub fn sample_closure<T: Copy>(
         .collect()
 }
 
+/// Samples the function at `n_samples` equidistant points on the interval.
 pub fn sample_function(f: Function1D, interval: Interval, n_samples: usize) -> Vec<Point2D> {
     make_supporting_points(n_samples, interval)
         .iter()
@@ -31,6 +35,7 @@ pub fn sample_function(f: Function1D, interval: Interval, n_samples: usize) -> V
         .collect()
 }
 
+/// abs(x)
 #[macro_export]
 macro_rules! abs {
     ($name: expr) => {
@@ -38,6 +43,7 @@ macro_rules! abs {
     };
 }
 
+/// sqrt(x)
 #[macro_export]
 macro_rules! sqrt {
     ($name: expr) => {
@@ -45,6 +51,7 @@ macro_rules! sqrt {
     };
 }
 
+/// ln(x)
 #[macro_export]
 macro_rules! ln {
     ($name: expr) => {
@@ -52,6 +59,7 @@ macro_rules! ln {
     };
 }
 
+/// x^y with y some kind of float
 #[macro_export]
 macro_rules! powf {
     ($name: expr, $exponent: expr) => {
@@ -59,6 +67,7 @@ macro_rules! powf {
     };
 }
 
+/// x^n with n some kind of int
 #[macro_export]
 macro_rules! powi {
     ($name: expr, $exponent: expr) => {
@@ -66,6 +75,7 @@ macro_rules! powi {
     };
 }
 
+/// sin(x)
 #[macro_export]
 macro_rules! sin {
     ($name: expr) => {
@@ -73,6 +83,7 @@ macro_rules! sin {
     };
 }
 
+/// cos(x)
 #[macro_export]
 macro_rules! cos {
     ($name: expr) => {
@@ -80,6 +91,7 @@ macro_rules! cos {
     };
 }
 
+/// e^x
 #[macro_export]
 macro_rules! exp {
     ($name: expr) => {

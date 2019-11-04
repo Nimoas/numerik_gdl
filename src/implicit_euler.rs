@@ -4,6 +4,33 @@ use crate::definitions::{
 use crate::newton_method::newton_method;
 use rayon::prelude::*;
 
+/// Implementation of the implicit euler method.
+/// (Not simple because I'm not 100% happy with it.)
+/// Lands on target even if h does not match.
+/// Uses Newton's method internally.
+///
+/// # Arguments
+///
+/// * `ivp` - The initial value problem we want to approximate
+/// * `h` - Step size of the algorithm
+/// * `t_target` - Target time we want to get the value for. Note that this should be directly reachable with t0 + k * h
+///
+/// # Example
+/// ```
+/// use ngdl_rust::definitions::{InitialValueProblem, SimpleDifferentiableFunction};
+/// use ngdl_rust::implicit_euler::implicit_euler;
+///
+/// let ivp: InitialValueProblem<SimpleDifferentiableFunction<(f64, f64)>> =
+///        InitialValueProblem::new(
+///            0.0,
+///            1.0,
+///            SimpleDifferentiableFunction::new(
+///                |(_, x)| -1000.0 * x,
+///                |(_, _)| -1000.0,
+///            ),
+///        );
+/// dbg!(implicit_euler(ivp, 0.001, 1.0));
+/// ```
 pub fn implicit_euler(
     ivp: InitialValueProblem<SimpleDifferentiableFunction<(f64, f64)>>,
     h: f64,
@@ -15,6 +42,17 @@ pub fn implicit_euler(
         .y
 }
 
+/// Implementation of the explicit euler method.
+/// Lands on target even if h does not match.
+/// The function returns the intermediate values as well as the final value in the form of a point vector
+///
+/// # Arguments
+///
+/// * `ivp` - The initial value problem we want to approximate
+/// * `h` - Step size of the algorithm
+/// * `t_target` - Target time we want to get the value for. Note that this should be directly reachable with t0 + k * h
+/// * `skip_n` - If > 0 only returns ever n-th value to reduce memory footprint while retaining smaller h
+///
 pub fn implicit_euler_interval(
     ivp: InitialValueProblem<SimpleDifferentiableFunction<(f64, f64)>>,
     h: f64,
@@ -67,6 +105,7 @@ fn implicit_euler_step(
     newton_method(func, t, val, 0.001 * h)
 }
 
+/// Runs the implicit euler method (interval version) for all supplied h in parallel.
 pub fn implicit_euler_interval_test_run(
     ivp: InitialValueProblem<SimpleDifferentiableFunction<(f64, f64)>>,
     h: &[f64],

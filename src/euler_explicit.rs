@@ -30,6 +30,17 @@ pub fn explicit_euler(ivp: InitialValueProblem<Function2D>, h: f64, t_target: f6
         .y
 }
 
+/// Simple implementation of the explicit euler method.
+/// Lands on target even if h does not match.
+/// The function returns the intermediate values as well as the final value in the form of a point vector
+///
+/// # Arguments
+///
+/// * `ivp` - The initial value problem we want to approximate
+/// * `h` - Step size of the algorithm
+/// * `t_target` - Target time we want to get the value for. Note that this should be directly reachable with t0 + k * h
+/// * `skip_n` - If > 0 only returns ever n-th value to reduce memory footprint while retaining smaller h
+///
 pub fn explicit_euler_interval(
     ivp: InitialValueProblem<Function2D>,
     h: f64,
@@ -71,6 +82,7 @@ pub fn explicit_euler_test_run(
         .collect()
 }
 
+/// Runs the explicit euler method (interval version) for all supplied h in parallel.
 pub fn explicit_euler_interval_test_run(
     ivp: InitialValueProblem<Function2D>,
     h: &[f64],

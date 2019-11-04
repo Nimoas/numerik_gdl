@@ -8,8 +8,9 @@ use ngdl_rust::util::sample_closure;
 use ngdl_rust::{powf, powi, sqrt};
 use std::error::Error;
 use std::fs::create_dir_all;
+use std::ops::Add;
 
-const IMAGE_DIR: &str = "./img_task02_6/";
+const IMAGE_DIR: &str = "./img_task03_4/";
 
 fn main() -> Result<(), Box<dyn Error>> {
     create_dir_all(IMAGE_DIR)?;
@@ -47,7 +48,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         plot_line_on(axis, &sampled, &[Color("blue")]);
     }
 
-    fg.show().expect("Unable to save file");
+    let filename = IMAGE_DIR.to_owned().add("plot.png");
+
+    fg.save_to_png(&filename, 1200, 800)
+        .expect("Unable to save file");
 
     Ok(())
 }

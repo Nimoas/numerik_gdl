@@ -1,5 +1,5 @@
 use crate::abs;
-use crate::definitions::DifferentiableFunction;
+use crate::definitions::{DifferentiableFunction, SampleableFunction};
 
 pub fn newton_method<F: DifferentiableFunction<(f64, f64)>>(
     func: F,

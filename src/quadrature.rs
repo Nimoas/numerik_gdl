@@ -3,25 +3,35 @@ use crate::util::make_supporting_points;
 use crate::{abs, ln};
 use rayon::prelude::*;
 
+/// Results of a quadrature test run.
+/// Contains all data for further analysis.
 #[derive(Debug, Copy, Clone)]
 pub struct QuadratureTestResult {
+    /// Resulting integral value
     pub value: f64,
+    /// |value - exact|
     pub abs_error: f64,
+    /// How many sub intervals were used to obtain the result.
     pub splits_n: usize,
+    /// The h corresponding to splits_n
     pub h: f64,
 }
 
+/// Type alias for a quadrature method.
 pub type QuadratureFormula = fn(f: Function1D, interval: &Interval) -> f64;
 
+/// Implementation of the trapezoid formula
 pub fn trapezoid_formula(f: Function1D, interval: &Interval) -> f64 {
     (interval.span() / 2.0) * (f(interval.start()) + f(interval.end()))
 }
 
+/// Implementation of the trapezoid formula
 pub fn kepler_formula(f: Function1D, interval: &Interval) -> f64 {
     let mid = interval.start() + (1.0 / 2.0) * (interval.end() - interval.start());
     (interval.span() / 6.0) * (f(interval.start()) + 4.0 * f(mid) + f(interval.end()))
 }
 
+/// Implementation of the trapezoid formula
 pub fn newton_three_eight_formula(f: Function1D, interval: &Interval) -> f64 {
     let mid1 = interval.start() + (1.0 / 3.0) * (interval.end() - interval.start());
     let mid2 = interval.start() + (2.0 / 3.0) * (interval.end() - interval.start());
@@ -61,6 +71,7 @@ pub fn quadrature(
     quadrature_with_supporting_points(method, f, &pts)
 }
 
+/// Runs the supplied quadrature method for every number of splits from 1 to `up_to_splits`.
 pub fn quadrature_test_run(
     method: QuadratureFormula,
     f: Function1D,
@@ -94,6 +105,8 @@ fn quadrature_with_supporting_points(
     sum
 }
 
+/// Specialty function for task 1.
+/// Could be made more general.
 pub fn get_convergence_order(run1: &QuadratureTestResult, run2: &QuadratureTestResult) -> f64 {
     (ln!(run2.abs_error) - ln!(run1.abs_error)) / (ln!(run2.h) - ln!(run1.h))
 }
