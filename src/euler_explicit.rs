@@ -68,6 +68,38 @@ pub fn explicit_euler_interval(
 
 /// Implementation of the explicit euler method for multiple dimensions.
 /// Lands on target even if h does not match.
+///
+/// # Arguments
+///
+/// * `ivp` - The initial value problem we want to approximate
+/// * `h` - Step size of the algorithm
+/// * `t_target` - Target time we want to get the value for. Note that this should be directly reachable with t0 + k * h
+///
+/// # Example
+/// ```
+/// use ngdl_rust::euler_explicit::explicit_euler_system;
+/// use ngdl_rust::definitions::{Function, InitialValueSystemProblem};
+///
+/// let h = 0.1;
+/// let t_target = 1.0;
+/// let dfx: Function<(f64, Vec<f64>)> = |(_, v)| -v[0] + v[1];
+/// let dfy: Function<(f64, Vec<f64>)> = |(_, v)| v[0] - v[1];
+///
+/// let problem = InitialValueSystemProblem::new(0.0, vec![1.0, 0.0], vec![dfx, dfy]);
+///
+/// dbg!(explicit_euler_system(problem, h, t_target));
+/// ```
+pub fn explicit_euler_system<FT: SampleableFunction<(f64, Vec<f64>)>>(
+    ivp: InitialValueSystemProblem<FT>,
+    h: f64,
+    t_target: f64,
+) -> Vec<f64> {
+    let results = explicit_euler_system_interval(ivp, h, t_target, 0);
+    results.last().unwrap().iter().map(|p| p.y).collect()
+}
+
+/// Implementation of the explicit euler method for multiple dimensions.
+/// Lands on target even if h does not match.
 /// The function returns the intermediate values as well as the final value in the form of a point vector
 ///
 /// # Arguments

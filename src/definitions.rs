@@ -28,6 +28,12 @@ pub type SimpleDifferentiableFunction2D = SimpleDifferentiableFunction<Function2
 /// Type alias
 pub type SimpleDifferentiableFunction1D = SimpleDifferentiableFunction<Function1D>;
 
+impl<T> SampleableFunction<T> for Function<T> {
+    fn value_at(&self, input: T) -> f64 {
+        self(input)
+    }
+}
+
 /// Implementation of DifferentiableFunction that uses Function<T>
 #[derive(Copy, Clone, Debug, new)]
 pub struct SimpleDifferentiableFunction<T> {
