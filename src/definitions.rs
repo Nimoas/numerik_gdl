@@ -1,4 +1,5 @@
 use crate::abs;
+use derive_new::*;
 use std::fmt::{Display, Error, Formatter};
 
 /// Generic type for a function -> R
@@ -19,25 +20,21 @@ pub type Function2D = Function<(f64, f64)>;
 /// Type alias
 pub type Closure2D<T> = Closure<(f64, f64), T>;
 
+/// Type alias for a function of t x R^n -> R
+pub type FunctionNDt = Function<(f64, Vec<f64>)>;
+
 /// Type alias
 pub type SimpleDifferentiableFunction2D = SimpleDifferentiableFunction<Function2D>;
 /// Type alias
 pub type SimpleDifferentiableFunction1D = SimpleDifferentiableFunction<Function1D>;
 
 /// Implementation of DifferentiableFunction that uses Function<T>
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, new)]
 pub struct SimpleDifferentiableFunction<T> {
     /// f
     pub f: Function<T>,
     /// f'
     pub df: Function<T>,
-}
-
-impl<T> SimpleDifferentiableFunction<T> {
-    /// Create a new function from f and f'
-    pub fn new(f: Function<T>, df: Function<T>) -> SimpleDifferentiableFunction<T> {
-        SimpleDifferentiableFunction { f, df }
-    }
 }
 
 impl<T> SampleableFunction<T> for SimpleDifferentiableFunction<T> {
@@ -53,21 +50,11 @@ impl<T> DifferentiableFunction<T> for SimpleDifferentiableFunction<T> {
 }
 
 /// Implementation for DifferentiableFunction that uses Closure<T>.
+#[derive(new)]
 pub struct ClosureDifferentiableFunction<T, Data: Copy> {
     data: Data,
     f: Closure<T, Data>,
     df: Closure<T, Data>,
-}
-
-impl<T, Data: Copy> ClosureDifferentiableFunction<T, Data> {
-    /// Create a new function with the passed data used in the closure
-    pub fn new(
-        data: Data,
-        f: Closure<T, Data>,
-        df: Closure<T, Data>,
-    ) -> ClosureDifferentiableFunction<T, Data> {
-        ClosureDifferentiableFunction { data, f, df }
-    }
 }
 
 impl<T, Data: Copy> SampleableFunction<T> for ClosureDifferentiableFunction<T, Data> {
@@ -98,7 +85,7 @@ pub trait SampleableFunction<T> {
 
 /// A simple point on the x/y plane.
 /// TODO maybe generalize
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, new)]
 pub struct Point2D {
     /// x coordinate
     pub x: f64,
@@ -107,18 +94,13 @@ pub struct Point2D {
 }
 
 /// Inclusive interval of the form [a, b] < R
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, new)]
 pub struct Interval {
     start: f64,
     end: f64,
 }
 
 impl Interval {
-    /// Create an interval
-    pub fn new(a: f64, b: f64) -> Self {
-        Interval { start: a, end: b }
-    }
-
     /// Get first value in interval
     pub fn start(&self) -> f64 {
         self.start
@@ -149,7 +131,7 @@ impl Display for Interval {
 /// Representing an initial value problem on R.
 /// Build to encapsulate the data fed into e.g. euler's method.
 /// TODO enforce trait bound of SampleableFunction for FT
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, new)]
 pub struct InitialValueProblem<FT> {
     /// t_0
     pub start_time: f64,
@@ -159,20 +141,20 @@ pub struct InitialValueProblem<FT> {
     pub df: FT,
 }
 
-impl<FT> InitialValueProblem<FT> {
-    /// Construct a new IVP
-    pub fn new(start_time: f64, start_value: f64, df: FT) -> InitialValueProblem<FT> {
-        InitialValueProblem {
-            start_time,
-            start_value,
-            df,
-        }
-    }
+/// Assume that values and dfs are same size and functions match...
+#[derive(Clone, Debug, new)]
+pub struct InitialValueSystemProblem {
+    /// t_0
+    pub start_time: f64,
+    /// f(t_0)
+    pub start_values: Vec<f64>,
+    /// f'(x)
+    pub dfs: Vec<FunctionNDt>,
 }
 
 /// Problem like in task 2 subtask 4.
 /// Likely will become more complex over time.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, new)]
 pub struct BoundaryValueProblem {
     /// f''(x)
     pub ddf: Function1D,
@@ -182,21 +164,4 @@ pub struct BoundaryValueProblem {
     pub start_value: f64,
     /// f(interval.end())
     pub end_value: f64,
-}
-
-impl BoundaryValueProblem {
-    /// Construct a new BVP
-    pub fn new(
-        ddf: Function1D,
-        interval: Interval,
-        start_value: f64,
-        end_value: f64,
-    ) -> BoundaryValueProblem {
-        BoundaryValueProblem {
-            ddf,
-            interval,
-            start_value,
-            end_value,
-        }
-    }
 }
