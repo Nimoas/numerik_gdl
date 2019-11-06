@@ -92,11 +92,11 @@ fn implicit_euler_step(
 ) -> f64 {
     let to_solve =
         |(t, x), (last, delta, g): (f64, f64, SimpleDifferentiableFunction<(f64, f64)>)| {
-            last + delta * (g.f)((t, x)) - x
+            last + delta * (g.f)((t + delta, x)) - x
         };
     let to_solve_derivative =
         |(t, x), (_, delta, g): (f64, f64, SimpleDifferentiableFunction<(f64, f64)>)| {
-            delta * (g.df)((t, x)) - 1.0
+            delta * (g.df)((t + delta, x)) - 1.0
         };
     let func: ClosureDifferentiableFunction<
         (f64, f64),

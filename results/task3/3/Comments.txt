@@ -7,4 +7,4 @@ On the explicit euler method results:
 On the implicit euler methods:
 * Implicit methods handle stiff problems much better. Thus all h give usable results.
 * Takes a lot longer to compute, esp. if we pick even smaller h.
-* Approximation has a phase-difference to the exact solution that corresponds to h.
+

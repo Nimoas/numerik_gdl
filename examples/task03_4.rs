@@ -15,6 +15,7 @@ const IMAGE_DIR: &str = "./img_task03_4/";
 fn main() -> Result<(), Box<dyn Error>> {
     create_dir_all(IMAGE_DIR)?;
 
+    // @Me: Wrong! See notes from the exercise.
     let exact = |x: f64, p: Point2D| 1.0 / powi!((x + (1.0 / sqrt!(p.y)) - p.x), 2);
     let exact_samples = 1000;
     let exact_sampled = sample_closure(
