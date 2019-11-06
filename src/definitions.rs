@@ -49,6 +49,19 @@ impl<T> DifferentiableFunction<T> for SimpleDifferentiableFunction<T> {
     }
 }
 
+/// Implementation for SampleableFunction that uses Closure<T>.
+#[derive(new)]
+pub struct ClosureSampleableFunction<T, Data: Copy> {
+    data: Data,
+    f: Closure<T, Data>,
+}
+
+impl<T, Data: Copy> SampleableFunction<T> for ClosureSampleableFunction<T, Data> {
+    fn value_at(&self, input: T) -> f64 {
+        (self.f)(input, self.data)
+    }
+}
+
 /// Implementation for DifferentiableFunction that uses Closure<T>.
 #[derive(new)]
 pub struct ClosureDifferentiableFunction<T, Data: Copy> {
@@ -141,15 +154,29 @@ pub struct InitialValueProblem<FT> {
     pub df: FT,
 }
 
+impl InitialValueProblem<Function2D> {
+    /// Helper to make multi dimensional euler usable for one dimensional problems
+    pub fn to_system_problem(
+        self,
+    ) -> InitialValueSystemProblem<ClosureSampleableFunction<(f64, Vec<f64>), Function2D>> {
+        let new_df: Closure<(f64, Vec<f64>), Function2D> = |(t, vec_x), df| df((t, vec_x[0]));
+        InitialValueSystemProblem::new(
+            self.start_time,
+            vec![self.start_value],
+            vec![ClosureSampleableFunction::new(self.df, new_df)],
+        )
+    }
+}
+
 /// Assume that values and dfs are same size and functions match...
 #[derive(Clone, Debug, new)]
-pub struct InitialValueSystemProblem {
+pub struct InitialValueSystemProblem<FT: SampleableFunction<(f64, Vec<f64>)>> {
     /// t_0
     pub start_time: f64,
     /// f(t_0)
     pub start_values: Vec<f64>,
     /// f'(x)
-    pub dfs: Vec<FunctionNDt>,
+    pub dfs: Vec<FT>,
 }
 
 /// Problem like in task 2 subtask 4.
