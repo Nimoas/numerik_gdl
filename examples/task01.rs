@@ -2,10 +2,7 @@ use gnuplot::PlotOption::{Caption, Color};
 use gnuplot::{AxesCommon, Figure};
 use ngdl_rust::definitions::{Function1D, Interval};
 use ngdl_rust::ln;
-use ngdl_rust::quadrature::{
-    get_convergence_order, kepler_formula, newton_three_eight_formula, quadrature_test_run,
-    trapezoid_formula, QuadratureFormula,
-};
+use ngdl_rust::quadrature::{get_convergence_order, quadrature_test_run, QuadratureFormula, TrapezoidFormula, KeplerFormula, NewtonThreeEightFormula};
 use rayon::prelude::*;
 use std::error::Error;
 use std::fs::create_dir_all;
@@ -23,15 +20,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Integrating ln(x) on the interval {}", interval);
     println!("Exact solution: {}\n", exact);
 
-    evaluate_quadrature_method(trapezoid_formula, interval, f, exact, "trapezoid");
-    evaluate_quadrature_method(kepler_formula, interval, f, exact, "kepler");
-    evaluate_quadrature_method(newton_three_eight_formula, interval, f, exact, "newton");
+    evaluate_quadrature_method(&TrapezoidFormula, interval, f, exact, "trapezoid");
+    evaluate_quadrature_method(&KeplerFormula, interval, f, exact, "kepler");
+    evaluate_quadrature_method(&NewtonThreeEightFormula, interval, f, exact, "newton");
 
     Ok(())
 }
 
-fn evaluate_quadrature_method(
-    method: QuadratureFormula,
+fn evaluate_quadrature_method<QT: QuadratureFormula<Function1D>>(
+    method: &QT,
     interval: Interval,
     f: Function1D,
     exact: f64,

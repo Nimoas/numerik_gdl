@@ -1,7 +1,6 @@
-use crate::definitions::{Function1D, Interval};
+use crate::definitions::{Interval, SampleableFunction};
 use crate::util::make_supporting_points;
 use crate::{abs, ln};
-use rayon::prelude::*;
 
 /// Results of a quadrature test run.
 /// Contains all data for further analysis.
@@ -18,25 +17,39 @@ pub struct QuadratureTestResult {
 }
 
 /// Type alias for a quadrature method.
-pub type QuadratureFormula = fn(f: Function1D, interval: &Interval) -> f64;
-
-/// Implementation of the trapezoid formula
-pub fn trapezoid_formula(f: Function1D, interval: &Interval) -> f64 {
-    (interval.span() / 2.0) * (f(interval.start()) + f(interval.end()))
+pub trait QuadratureFormula<FT: SampleableFunction<f64>> {
+    fn apply(&self, f: &FT, interval: &Interval) -> f64;
 }
 
 /// Implementation of the trapezoid formula
-pub fn kepler_formula(f: Function1D, interval: &Interval) -> f64 {
-    let mid = interval.start() + (1.0 / 2.0) * (interval.end() - interval.start());
-    (interval.span() / 6.0) * (f(interval.start()) + 4.0 * f(mid) + f(interval.end()))
+pub struct TrapezoidFormula;
+
+impl<FT: SampleableFunction<f64>> QuadratureFormula<FT> for TrapezoidFormula {
+    fn apply(&self, f: &FT, interval: &Interval) -> f64 {
+        (interval.span() / 2.0) * (f.value_at(interval.start()) + f.value_at(interval.end()))
+    }
 }
 
 /// Implementation of the trapezoid formula
-pub fn newton_three_eight_formula(f: Function1D, interval: &Interval) -> f64 {
-    let mid1 = interval.start() + (1.0 / 3.0) * (interval.end() - interval.start());
-    let mid2 = interval.start() + (2.0 / 3.0) * (interval.end() - interval.start());
-    (interval.span() / 8.0)
-        * (f(interval.start()) + 3.0 * f(mid1) + 3.0 * f(mid2) + f(interval.end()))
+pub struct KeplerFormula;
+
+impl<FT: SampleableFunction<f64>> QuadratureFormula<FT> for KeplerFormula {
+    fn apply(&self, f: &FT, interval: &Interval) -> f64 {
+        let mid = interval.start() + (1.0 / 2.0) * (interval.end() - interval.start());
+        (interval.span() / 6.0) * (f.value_at(interval.start()) + 4.0 * f.value_at(mid) + f.value_at(interval.end()))
+    }
+}
+
+/// Implementation of the trapezoid formula
+pub struct NewtonThreeEightFormula;
+
+impl<FT: SampleableFunction<f64>> QuadratureFormula<FT> for NewtonThreeEightFormula {
+    fn apply(&self, f: &FT, interval: &Interval) -> f64 {
+        let mid1 = interval.start() + (1.0 / 3.0) * (interval.end() - interval.start());
+        let mid2 = interval.start() + (2.0 / 3.0) * (interval.end() - interval.start());
+        (interval.span() / 8.0)
+            * (f.value_at(interval.start()) + 3.0 * f.value_at(mid1) + 3.0 * f.value_at(mid2) + f.value_at(interval.end()))
+    }
 }
 
 /// Generic implementation of approximating a function area over an interval.
@@ -51,19 +64,19 @@ pub fn newton_three_eight_formula(f: Function1D, interval: &Interval) -> f64 {
 /// # Example
 /// ```
 /// use ngdl_rust::definitions::{Function1D, Interval};
-/// use ngdl_rust::quadrature::{quadrature, newton_three_eight_formula};
+/// use ngdl_rust::quadrature::{quadrature, NewtonThreeEightFormula};
 ///
 /// let interval = Interval::new(1.0, 10.0);
 /// let f: Function1D = |x| x.ln();
 ///
 /// // Note that we can define a function alias to make using the method more ergonomic.
-/// let integrate = |f, interval, n| quadrature(newton_three_eight_formula, f, interval, n);
+/// let integrate = |f, interval, n| quadrature(&NewtonThreeEightFormula, f, interval, n);
 ///
-/// dbg!(integrate(f, interval, 1000));
+/// dbg!(integrate(&f, interval, 1000));
 /// ```
-pub fn quadrature(
-    method: QuadratureFormula,
-    f: Function1D,
+pub fn quadrature<FT: SampleableFunction<f64>, QT: QuadratureFormula<FT>>(
+    method: &QT,
+    f: &FT,
     interval: Interval,
     n_splits: usize,
 ) -> f64 {
@@ -72,17 +85,17 @@ pub fn quadrature(
 }
 
 /// Runs the supplied quadrature method for every number of splits from 1 to `up_to_splits`.
-pub fn quadrature_test_run(
-    method: QuadratureFormula,
-    f: Function1D,
+pub fn quadrature_test_run<FT: SampleableFunction<f64>, QT: QuadratureFormula<FT>>(
+    method: &QT,
+    f: FT,
     exact: f64,
     interval: Interval,
     up_to_splits: usize,
 ) -> Vec<QuadratureTestResult> {
     (1..=up_to_splits)
-        .into_par_iter()
+        .into_iter()
         .map(|n| {
-            let value = quadrature(method, f, interval, n);
+            let value = quadrature(method, &f, interval, n);
             QuadratureTestResult {
                 value,
                 abs_error: abs!(exact - value),
@@ -93,14 +106,14 @@ pub fn quadrature_test_run(
         .collect()
 }
 
-fn quadrature_with_supporting_points(
-    method: QuadratureFormula,
-    f: Function1D,
+fn quadrature_with_supporting_points<FT: SampleableFunction<f64>, QT: QuadratureFormula<FT>>(
+    method: &QT,
+    f: &FT,
     points: &[f64],
 ) -> f64 {
     let mut sum = 0.0;
     for i in 0..points.len() - 1 {
-        sum += method(f, &Interval::new(points[i], points[i + 1]));
+        sum += method.apply(f, &Interval::new(points[i], points[i + 1]));
     }
     sum
 }
