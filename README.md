@@ -19,3 +19,4 @@ Just replace the task name with the correct filename for the current task.
 * Task 2, Subtask 6: ``cargo run --example task02_6``
 * Task 3, Subtask 3: ``cargo run --example task03_3``
 * Task 3, Subtask 4: ``cargo run --example task03_4``
+* Task 4, Subtask 2: ``cargo run --example task04_2``

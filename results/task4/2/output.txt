@@ -1,0 +1,11 @@
+Problem from task 4, subtask 2
+
+Step size: h = 0.1
+target t: t = 1
+
+Approximated solution: x_t = 0.5536870911999999, y_t = 0.4463129088
+Exact solution: x_t = 0.5676676416183064, y_t = 0.43233235838169365
+
+Numerical error (in euclidean norm): 0.019771484011009793
+First error bound: 0.26211664880972224
+Second error bound: 0.06327122699760537

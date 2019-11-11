@@ -2,7 +2,10 @@ use gnuplot::PlotOption::{Caption, Color};
 use gnuplot::{AxesCommon, Figure};
 use ngdl_rust::definitions::{Function1D, Interval};
 use ngdl_rust::ln;
-use ngdl_rust::quadrature::{get_convergence_order, quadrature_test_run, QuadratureFormula, TrapezoidFormula, KeplerFormula, NewtonThreeEightFormula};
+use ngdl_rust::quadrature::{
+    get_convergence_order, quadrature_test_run, KeplerFormula, NewtonThreeEightFormula,
+    QuadratureFormula, TrapezoidFormula,
+};
 use rayon::prelude::*;
 use std::error::Error;
 use std::fs::create_dir_all;

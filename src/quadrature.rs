@@ -17,14 +17,16 @@ pub struct QuadratureTestResult {
 }
 
 /// Type alias for a quadrature method.
-pub trait QuadratureFormula<FT: SampleableFunction<f64>> {
+pub trait QuadratureFormula<FT: SampleableFunction<f64, f64>> {
+    /// This does quadrature for one sub-interval.
+    /// Basically just drop the formulas in here.
     fn apply(&self, f: &FT, interval: &Interval) -> f64;
 }
 
 /// Implementation of the trapezoid formula
 pub struct TrapezoidFormula;
 
-impl<FT: SampleableFunction<f64>> QuadratureFormula<FT> for TrapezoidFormula {
+impl<FT: SampleableFunction<f64, f64>> QuadratureFormula<FT> for TrapezoidFormula {
     fn apply(&self, f: &FT, interval: &Interval) -> f64 {
         (interval.span() / 2.0) * (f.value_at(interval.start()) + f.value_at(interval.end()))
     }
@@ -33,22 +35,26 @@ impl<FT: SampleableFunction<f64>> QuadratureFormula<FT> for TrapezoidFormula {
 /// Implementation of the trapezoid formula
 pub struct KeplerFormula;
 
-impl<FT: SampleableFunction<f64>> QuadratureFormula<FT> for KeplerFormula {
+impl<FT: SampleableFunction<f64, f64>> QuadratureFormula<FT> for KeplerFormula {
     fn apply(&self, f: &FT, interval: &Interval) -> f64 {
         let mid = interval.start() + (1.0 / 2.0) * (interval.end() - interval.start());
-        (interval.span() / 6.0) * (f.value_at(interval.start()) + 4.0 * f.value_at(mid) + f.value_at(interval.end()))
+        (interval.span() / 6.0)
+            * (f.value_at(interval.start()) + 4.0 * f.value_at(mid) + f.value_at(interval.end()))
     }
 }
 
 /// Implementation of the trapezoid formula
 pub struct NewtonThreeEightFormula;
 
-impl<FT: SampleableFunction<f64>> QuadratureFormula<FT> for NewtonThreeEightFormula {
+impl<FT: SampleableFunction<f64, f64>> QuadratureFormula<FT> for NewtonThreeEightFormula {
     fn apply(&self, f: &FT, interval: &Interval) -> f64 {
         let mid1 = interval.start() + (1.0 / 3.0) * (interval.end() - interval.start());
         let mid2 = interval.start() + (2.0 / 3.0) * (interval.end() - interval.start());
         (interval.span() / 8.0)
-            * (f.value_at(interval.start()) + 3.0 * f.value_at(mid1) + 3.0 * f.value_at(mid2) + f.value_at(interval.end()))
+            * (f.value_at(interval.start())
+                + 3.0 * f.value_at(mid1)
+                + 3.0 * f.value_at(mid2)
+                + f.value_at(interval.end()))
     }
 }
 
@@ -74,7 +80,7 @@ impl<FT: SampleableFunction<f64>> QuadratureFormula<FT> for NewtonThreeEightForm
 ///
 /// dbg!(integrate(&f, interval, 1000));
 /// ```
-pub fn quadrature<FT: SampleableFunction<f64>, QT: QuadratureFormula<FT>>(
+pub fn quadrature<FT: SampleableFunction<f64, f64>, QT: QuadratureFormula<FT>>(
     method: &QT,
     f: &FT,
     interval: Interval,
@@ -85,7 +91,7 @@ pub fn quadrature<FT: SampleableFunction<f64>, QT: QuadratureFormula<FT>>(
 }
 
 /// Runs the supplied quadrature method for every number of splits from 1 to `up_to_splits`.
-pub fn quadrature_test_run<FT: SampleableFunction<f64>, QT: QuadratureFormula<FT>>(
+pub fn quadrature_test_run<FT: SampleableFunction<f64, f64>, QT: QuadratureFormula<FT>>(
     method: &QT,
     f: FT,
     exact: f64,
@@ -106,7 +112,10 @@ pub fn quadrature_test_run<FT: SampleableFunction<f64>, QT: QuadratureFormula<FT
         .collect()
 }
 
-fn quadrature_with_supporting_points<FT: SampleableFunction<f64>, QT: QuadratureFormula<FT>>(
+fn quadrature_with_supporting_points<
+    FT: SampleableFunction<f64, f64>,
+    QT: QuadratureFormula<FT>,
+>(
     method: &QT,
     f: &FT,
     points: &[f64],

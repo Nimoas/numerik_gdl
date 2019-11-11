@@ -1,4 +1,5 @@
 use crate::definitions::{Closure1D, Function1D, Interval, Point2D};
+use crate::sqrt;
 
 /// Takes the interval and splits it into n sub-intervals.
 /// Returns the resulting n+1 boundary points.
@@ -33,6 +34,11 @@ pub fn sample_function(f: Function1D, interval: Interval, n_samples: usize) -> V
         .iter()
         .map(|x| Point2D { x: *x, y: f(*x) })
         .collect()
+}
+
+/// Calculates the euclidean norm of a vector.
+pub fn euclidean_norm(v: Vec<f64>) -> f64 {
+    sqrt!(v.iter().map(|x| x * x).sum::<f64>())
 }
 
 /// abs(x)
@@ -88,6 +94,14 @@ macro_rules! sin {
 macro_rules! cos {
     ($name: expr) => {
         $name.cos()
+    };
+}
+
+/// ceiling(x)
+#[macro_export]
+macro_rules! ceil {
+    ($name: expr) => {
+        $name.ceil() as usize
     };
 }
 

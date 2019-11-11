@@ -1,6 +1,8 @@
 use crate::abs;
 use derive_new::*;
 use std::fmt::{Display, Error, Formatter};
+use std::marker::PhantomData;
+use std::ops::Mul;
 
 /// Generic type for a function -> R
 /// T can be e.g. f64, or (f64, f64).
@@ -21,16 +23,29 @@ pub type Function2D = Function<(f64, f64)>;
 pub type Closure2D<T> = Closure<(f64, f64), T>;
 
 /// Type alias for a function of t x R^n -> R
-pub type FunctionNDt = Function<(f64, Vec<f64>)>;
+pub type FunctionND<T, R> = fn(T) -> R;
 
 /// Type alias
 pub type SimpleDifferentiableFunction2D = SimpleDifferentiableFunction<Function2D>;
 /// Type alias
 pub type SimpleDifferentiableFunction1D = SimpleDifferentiableFunction<Function1D>;
 
-impl<T> SampleableFunction<T> for Function<T> {
-    fn value_at(&self, input: T) -> f64 {
+impl<T, R> SampleableFunction<T, R> for FunctionND<T, R> {
+    fn value_at(&self, input: T) -> R {
         self(input)
+    }
+}
+
+/// It's impossible to implement the Sub trait for Vec<f64>.
+/// Because of that I re-created it shortly.
+pub trait Subtractible {
+    /// Subtraction
+    fn sub(self, rhs: Self) -> Self;
+}
+
+impl Subtractible for Vec<f64> {
+    fn sub(self, rhs: Self) -> Self {
+        self.iter().zip(rhs).map(|(a, b)| a - b).collect()
     }
 }
 
@@ -43,7 +58,7 @@ pub struct SimpleDifferentiableFunction<T> {
     pub df: Function<T>,
 }
 
-impl<T> SampleableFunction<T> for SimpleDifferentiableFunction<T> {
+impl<T> SampleableFunction<T, f64> for SimpleDifferentiableFunction<T> {
     fn value_at(&self, input: T) -> f64 {
         (self.f)(input)
     }
@@ -62,7 +77,7 @@ pub struct ClosureSampleableFunction<T, Data: Copy> {
     f: Closure<T, Data>,
 }
 
-impl<T, Data: Copy> SampleableFunction<T> for ClosureSampleableFunction<T, Data> {
+impl<T, Data: Copy> SampleableFunction<T, f64> for ClosureSampleableFunction<T, Data> {
     fn value_at(&self, input: T) -> f64 {
         (self.f)(input, self.data)
     }
@@ -76,7 +91,7 @@ pub struct ClosureDifferentiableFunction<T, Data: Copy> {
     df: Closure<T, Data>,
 }
 
-impl<T, Data: Copy> SampleableFunction<T> for ClosureDifferentiableFunction<T, Data> {
+impl<T, Data: Copy> SampleableFunction<T, f64> for ClosureDifferentiableFunction<T, Data> {
     fn value_at(&self, input: T) -> f64 {
         (self.f)(input, self.data)
     }
@@ -88,18 +103,91 @@ impl<T, Data: Copy> DifferentiableFunction<T> for ClosureDifferentiableFunction<
     }
 }
 
+/// Mathematical composition of functions for my SampleableFunction trait.
+/// You basically give it a f_inner and f_outer and it does f_outer . f_inner.
+#[derive(new)]
+pub struct ComposeSampleableFunction<
+    T,
+    R,
+    R2,
+    FT: SampleableFunction<T, R>,
+    FT2: SampleableFunction<R, R2>,
+> {
+    _t: PhantomData<T>,
+    _r: PhantomData<R>,
+    _r2: PhantomData<R2>,
+    inner: FT,
+    outer: FT2,
+}
+
+impl<T, R, R2, FT: SampleableFunction<T, R>, FT2: SampleableFunction<R, R2>>
+    SampleableFunction<T, R2> for ComposeSampleableFunction<T, R, R2, FT, FT2>
+{
+    fn value_at(&self, input: T) -> R2 {
+        self.outer.value_at(self.inner.value_at(input))
+    }
+}
+
+/// For two sampleable functions this returns the difference between all first and second values.
+#[derive(new)]
+pub struct SubSampleableFunction<
+    T,
+    R: Subtractible,
+    FT: SampleableFunction<T, R>,
+    FT2: SampleableFunction<T, R>,
+> {
+    _t: PhantomData<T>,
+    _r: PhantomData<R>,
+    a: FT,
+    b: FT2,
+}
+
+impl<T: Clone, R: Subtractible, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
+    SampleableFunction<T, R> for SubSampleableFunction<T, R, FT, FT2>
+{
+    fn value_at(&self, input: T) -> R {
+        self.a
+            .value_at(input.clone())
+            .sub(self.b.value_at(input.clone()))
+    }
+}
+
+/// For two sampleable functions this returns the product of all first and second values.
+#[derive(new)]
+pub struct MultSampleableFunction<
+    T,
+    R: Mul<Output = R>,
+    FT: SampleableFunction<T, R>,
+    FT2: SampleableFunction<T, R>,
+> {
+    _t: PhantomData<T>,
+    _r: PhantomData<R>,
+    a: FT,
+    b: FT2,
+}
+
+impl<T: Clone, R: Mul<Output = R>, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
+    SampleableFunction<T, R> for MultSampleableFunction<T, R, FT, FT2>
+{
+    fn value_at(&self, input: T) -> R {
+        self.a
+            .value_at(input.clone())
+            .mul(self.b.value_at(input.clone()))
+    }
+}
+
 /// Describes a one time differentiable f -> R.
 /// Note that continuity of the function is not enforced and let to the user.
-pub trait DifferentiableFunction<T>: SampleableFunction<T> {
+pub trait DifferentiableFunction<T>: SampleableFunction<T, f64> {
     /// f'(input)
     fn derivative_at(&self, input: T) -> f64;
 }
 
 /// Describes a function -> R that can be sampled at every point of T (whatever that currently is).
 /// That does not mean it is continuous!
-pub trait SampleableFunction<T> {
+pub trait SampleableFunction<T, R> {
     /// f(input)
-    fn value_at(&self, input: T) -> f64;
+    fn value_at(&self, input: T) -> R;
 }
 
 /// A simple point on the x/y plane.
@@ -176,7 +264,7 @@ impl InitialValueProblem<Function2D> {
 
 /// Assume that values and dfs are same size and functions match...
 #[derive(Clone, Debug, new)]
-pub struct InitialValueSystemProblem<FT: SampleableFunction<(f64, Vec<f64>)>> {
+pub struct InitialValueSystemProblem<FT: SampleableFunction<(f64, Vec<f64>), f64>> {
     /// t_0
     pub start_time: f64,
     /// f(t_0)
