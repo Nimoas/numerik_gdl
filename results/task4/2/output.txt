@@ -8,4 +8,4 @@ Exact solution: x_t = 0.5676676416183064, y_t = 0.43233235838169365
 
 Numerical error (in euclidean norm): 0.019771484011009793
 First error bound: 0.26211664880972224
-Second error bound: 0.06327122699760537
+Second error bound: 0.06327122699760537 // Note that the second bound is a lot better
