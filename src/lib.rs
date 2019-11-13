@@ -17,3 +17,6 @@ pub mod plot_util;
 pub mod quadrature;
 /// Helpful helpers for common computations
 pub mod util;
+pub mod modified_explicit_euler;
+pub mod explicit_runge_kutta;
+mod generalized_explicit_one_step_method;

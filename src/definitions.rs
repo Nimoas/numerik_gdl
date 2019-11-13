@@ -26,9 +26,9 @@ pub type Closure2D<T> = Closure<(f64, f64), T>;
 pub type FunctionND<T, R> = fn(T) -> R;
 
 /// Type alias
-pub type SimpleDifferentiableFunction2D = SimpleDifferentiableFunction<Function2D>;
+pub type SimpleDifferentiableFunction2D = SimpleDifferentiableFunction<(f64, f64)>;
 /// Type alias
-pub type SimpleDifferentiableFunction1D = SimpleDifferentiableFunction<Function1D>;
+pub type SimpleDifferentiableFunction1D = SimpleDifferentiableFunction<f64>;
 
 impl<T, R> SampleableFunction<T, R> for FunctionND<T, R> {
     fn value_at(&self, input: T) -> R {

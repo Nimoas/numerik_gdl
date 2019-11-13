@@ -1,5 +1,5 @@
 use crate::definitions::{Closure1D, Function1D, Interval, Point2D};
-use crate::sqrt;
+use crate::{sqrt, ln};
 
 /// Takes the interval and splits it into n sub-intervals.
 /// Returns the resulting n+1 boundary points.
@@ -39,6 +39,20 @@ pub fn sample_function(f: Function1D, interval: Interval, n_samples: usize) -> V
 /// Calculates the euclidean norm of a vector.
 pub fn euclidean_norm(v: Vec<f64>) -> f64 {
     sqrt!(v.iter().map(|x| x * x).sum::<f64>())
+}
+
+/// Specialty function for task 1.
+/// Could be made more general.
+pub fn get_convergence_order(abs_errors: &[f64], hs: &[f64]) -> f64 {
+    let ps: Vec<f64> = abs_errors
+        .iter()
+        .zip(hs)
+        .zip(abs_errors.iter().skip(1))
+        .zip(hs.iter().skip(1))
+        .map(|(((abs_error, h1), abs_error2), h2)| (ln!(abs_error2) - ln!(abs_error)) / (ln!(h2) - ln!(h1)))
+        .collect();
+
+    ps.iter().sum::<f64>() / ps.len() as f64
 }
 
 /// abs(x)
