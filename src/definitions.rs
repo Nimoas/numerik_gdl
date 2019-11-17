@@ -38,14 +38,38 @@ impl<T, R> SampleableFunction<T, R> for FunctionND<T, R> {
 
 /// It's impossible to implement the Sub trait for Vec<f64>.
 /// Because of that I re-created it shortly.
-pub trait Subtractible {
+pub trait PointwiseSub {
     /// Subtraction
-    fn sub(self, rhs: Self) -> Self;
+    fn pointwise_sub(self, rhs: Self) -> Self;
 }
 
-impl Subtractible for Vec<f64> {
-    fn sub(self, rhs: Self) -> Self {
+impl PointwiseSub for Vec<f64> {
+    fn pointwise_sub(self, rhs: Self) -> Self {
         self.iter().zip(rhs).map(|(a, b)| a - b).collect()
+    }
+}
+
+/// Pointwise addition for vectors
+pub trait PointwiseAdd {
+    /// Addition
+    fn pointwise_add(self, rhs: Self) -> Self;
+}
+
+impl PointwiseAdd for Vec<f64> {
+    fn pointwise_add(self, rhs: Self) -> Self {
+        self.iter().zip(rhs).map(|(a, b)| a + b).collect()
+    }
+}
+
+/// Scalar multiplication for vectors
+pub trait ScalarMul<T: Mul> {
+    /// Addition
+    fn scalar_mul(self, rhs: T) -> Self;
+}
+
+impl ScalarMul<f64> for Vec<f64> {
+    fn scalar_mul(self, rhs: f64) -> Self {
+        self.iter().map(|a| a * rhs).collect()
     }
 }
 
@@ -121,7 +145,7 @@ pub struct ComposeSampleableFunction<
 }
 
 impl<T, R, R2, FT: SampleableFunction<T, R>, FT2: SampleableFunction<R, R2>>
-SampleableFunction<T, R2> for ComposeSampleableFunction<T, R, R2, FT, FT2>
+    SampleableFunction<T, R2> for ComposeSampleableFunction<T, R, R2, FT, FT2>
 {
     fn value_at(&self, input: T) -> R2 {
         self.outer.value_at(self.inner.value_at(input))
@@ -132,7 +156,7 @@ SampleableFunction<T, R2> for ComposeSampleableFunction<T, R, R2, FT, FT2>
 #[derive(new)]
 pub struct SubSampleableFunction<
     T,
-    R: Subtractible,
+    R: PointwiseSub,
     FT: SampleableFunction<T, R>,
     FT2: SampleableFunction<T, R>,
 > {
@@ -142,13 +166,13 @@ pub struct SubSampleableFunction<
     b: FT2,
 }
 
-impl<T: Clone, R: Subtractible, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
-SampleableFunction<T, R> for SubSampleableFunction<T, R, FT, FT2>
+impl<T: Clone, R: PointwiseSub, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
+    SampleableFunction<T, R> for SubSampleableFunction<T, R, FT, FT2>
 {
     fn value_at(&self, input: T) -> R {
         self.a
             .value_at(input.clone())
-            .sub(self.b.value_at(input.clone()))
+            .pointwise_sub(self.b.value_at(input.clone()))
     }
 }
 
@@ -156,7 +180,7 @@ SampleableFunction<T, R> for SubSampleableFunction<T, R, FT, FT2>
 #[derive(new)]
 pub struct MultSampleableFunction<
     T,
-    R: Mul<Output=R>,
+    R: Mul<Output = R>,
     FT: SampleableFunction<T, R>,
     FT2: SampleableFunction<T, R>,
 > {
@@ -166,8 +190,8 @@ pub struct MultSampleableFunction<
     b: FT2,
 }
 
-impl<T: Clone, R: Mul<Output=R>, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
-SampleableFunction<T, R> for MultSampleableFunction<T, R, FT, FT2>
+impl<T: Clone, R: Mul<Output = R>, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
+    SampleableFunction<T, R> for MultSampleableFunction<T, R, FT, FT2>
 {
     fn value_at(&self, input: T) -> R {
         self.a
@@ -176,14 +200,17 @@ SampleableFunction<T, R> for MultSampleableFunction<T, R, FT, FT2>
     }
 }
 
+/// Takes a differentiable function and returns the values of its derivative on being sampled.
 #[derive(new)]
 pub struct SampledDerivative<T, R, FT: DifferentiableFunction<T, R>> {
     _t: PhantomData<T>,
     _r: PhantomData<R>,
-    f: FT
+    f: FT,
 }
 
-impl<T, R, FT: DifferentiableFunction<T, R>> SampleableFunction<T, R> for SampledDerivative<T, R, FT> {
+impl<T, R, FT: DifferentiableFunction<T, R>> SampleableFunction<T, R>
+    for SampledDerivative<T, R, FT>
+{
     fn value_at(&self, input: T) -> R {
         self.f.derivative_at(input)
     }

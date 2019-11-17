@@ -1,8 +1,15 @@
-use crate::definitions::{InitialValueProblem, DifferentiableFunction, Point2D};
+use crate::definitions::{DifferentiableFunction, InitialValueProblem, Point2D};
 
 /// Simple implementation of the step taken during the explicit euler function.
-fn modified_explicit_euler_step<FT: DifferentiableFunction<(f64, f64), f64>>(df: &FT, t: f64, last_value: f64, h: f64) -> f64 {
-    last_value + h * df.value_at((t, last_value)) + (h * h / 2.0) * df.derivative_at((t, last_value))
+fn modified_explicit_euler_step<FT: DifferentiableFunction<(f64, f64), f64>>(
+    df: &FT,
+    t: f64,
+    last_value: f64,
+    h: f64,
+) -> f64 {
+    last_value
+        + h * df.value_at((t, last_value))
+        + (h * h / 2.0) * df.derivative_at((t, last_value))
 }
 
 /// Modified implementation of the explicit euler method using y'' as well.
@@ -22,7 +29,11 @@ fn modified_explicit_euler_step<FT: DifferentiableFunction<(f64, f64), f64>>(df:
 /// let ivp: InitialValueProblem<Function2D> = InitialValueProblem::new(0.0, 1.0, |(_, x)| x*x);
 /// dbg!(explicit_euler(ivp, 0.001, 1.0));
 /// ```
-pub fn modified_explicit_euler<FT: DifferentiableFunction<(f64, f64), f64>>(ivp: InitialValueProblem<FT>, h: f64, t_target: f64) -> f64 {
+pub fn modified_explicit_euler<FT: DifferentiableFunction<(f64, f64), f64>>(
+    ivp: InitialValueProblem<FT>,
+    h: f64,
+    t_target: f64,
+) -> f64 {
     modified_explicit_euler_interval(ivp, h, t_target, 0)
         .last()
         .unwrap()

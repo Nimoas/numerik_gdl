@@ -1,0 +1,5 @@
+In short: Euler's method is not the right tool for this job...
+
+* I did the same with the RK method first in order to find out how this should look.
+* Values for s need to compensate for the error as well.
+* Values for h seem completely arbitrary... Minimal changes can throw the result completely off target. (See the other image I put in here.)

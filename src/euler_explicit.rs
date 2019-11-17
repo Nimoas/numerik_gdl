@@ -1,13 +1,11 @@
 use crate::definitions::{
     ComposeSampleableFunction, Function, Function2D, FunctionND, InitialValueProblem,
-    InitialValueSystemProblem, Point2D, SampleableFunction, SubSampleableFunction,
+    InitialValueSystemProblem, Point2D, PointwiseAdd, SampleableFunction, ScalarMul,
+    SubSampleableFunction,
 };
-use crate::util::euclidean_norm;
-use crate::{abs, ceil};
-use derive_new::*;
-use rayon::prelude::*;
-use std::f64::EPSILON;
 use crate::generalized_explicit_one_step_method::{OneStepMethod, OneStepMethodStep};
+use crate::util::euclidean_norm;
+use rayon::prelude::*;
 
 /// Simple implementation of the explicit euler method.
 /// Lands on target even if h does not match.
@@ -141,7 +139,8 @@ pub fn get_residual_function(
 ) -> impl SampleableFunction<f64, f64> {
     // First a priori error
     let euler_method = make_explicit_euler_method_system(create_problem(), h);
-    let slope_polygonal_spline = make_explicit_euler_method_system(create_problem(), h).get_derivative();
+    let slope_polygonal_spline =
+        make_explicit_euler_method_system(create_problem(), h).get_derivative();
     // f (spline values)
     let f: FunctionND<Vec<f64>, Vec<f64>> = |vec_x| vec![-vec_x[0] + vec_x[1], vec_x[0] - vec_x[1]];
     let f_tmp = ComposeSampleableFunction::new(euler_method, f);
@@ -159,16 +158,17 @@ impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> OneStepMethodStep<FT> for Exp
     fn step(&self, dfs: &[FT], t: f64, last_values: &[f64], h: f64) -> Vec<f64> {
         let last_values_owned: Vec<f64> = last_values.to_vec();
         dfs.iter()
-            .zip(last_values)
-            .map(|(df, last_value)| last_value + h * df.value_at((t, last_values_owned.clone())))
-            .collect()
+            .map(|df| df.value_at((t, last_values_owned.clone())))
+            .collect::<Vec<f64>>()
+            .scalar_mul(h)
+            .pointwise_add(last_values_owned)
     }
 }
 
+/// Makes a system of ODEs into a sampleable function using the explicit euler method.
 pub fn make_explicit_euler_method_system<FT: SampleableFunction<(f64, Vec<f64>), f64>>(
     ivp: InitialValueSystemProblem<FT>,
     h: f64,
 ) -> OneStepMethod<FT, ExplicitEulerStep> {
     OneStepMethod::new(ExplicitEulerStep, ivp, h)
 }
-

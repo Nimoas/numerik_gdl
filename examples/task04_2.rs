@@ -1,6 +1,6 @@
 use ngdl_rust::definitions::{
     Function, Function1D, FunctionND, InitialValueSystemProblem, Interval, MultSampleableFunction,
-    Subtractible,
+    PointwiseSub,
 };
 use ngdl_rust::euler_explicit::{explicit_euler_system, get_residual_function};
 use ngdl_rust::exp;
@@ -22,13 +22,22 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Problem from task 4, subtask 2\n");
     println!("Step size: h = {}", h);
     println!("target t: t = {}\n", t_target);
-    println!("Approximated solution: x_t = {}, y_t = {}", &solution[0], &solution[1]);
+    println!(
+        "Approximated solution: x_t = {}, y_t = {}",
+        &solution[0], &solution[1]
+    );
 
     let exact_value = exact(1.0);
-    println!("Exact solution: x_t = {}, y_t = {}\n", &exact_value[0], &exact_value[1]);
+    println!(
+        "Exact solution: x_t = {}, y_t = {}\n",
+        &exact_value[0], &exact_value[1]
+    );
 
-    let num_error = solution.sub(exact_value);
-    println!("Numerical error (in euclidean norm): {}", euclidean_norm(num_error));
+    let num_error = solution.pointwise_sub(exact_value);
+    println!(
+        "Numerical error (in euclidean norm): {}",
+        euclidean_norm(num_error)
+    );
 
     evaluate_first_error_bound(h);
 

@@ -1,8 +1,11 @@
+use crate::definitions::{InitialValueSystemProblem, PointwiseAdd, SampleableFunction, ScalarMul};
+use crate::generalized_explicit_one_step_method::{OneStepMethod, OneStepMethodStep};
+use crate::util::make_zero_vec;
 use derive_new::*;
-use crate::definitions::{SampleableFunction, InitialValueSystemProblem};
-use crate::generalized_explicit_one_step_method::{OneStepMethodStep, OneStepMethod};
 use std::marker::PhantomData;
 
+/// This is a tableau for a Runge-Kutta method.
+/// I would prefer to enforce same size for all of these, but the required Rust feature (const generics) has not yet stabilized.
 #[derive(Clone, Debug, new)]
 pub struct Tableau {
     cs: Vec<f64>,
@@ -10,10 +13,11 @@ pub struct Tableau {
     coeffs: Vec<Vec<f64>>,
 }
 
+/// Implementation for a RK method with only explicit components.
 #[derive(Clone, Debug, new)]
 pub struct ExplicitRungeKuttaMethod<FT: SampleableFunction<(f64, Vec<f64>), f64>> {
     _t: PhantomData<FT>,
-    tableau: Tableau
+    tableau: Tableau,
 }
 
 impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> ExplicitRungeKuttaMethod<FT> {
@@ -21,59 +25,76 @@ impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> ExplicitRungeKuttaMethod<FT> 
         let mut ks: Vec<Vec<f64>> = Vec::with_capacity(self.tableau.cs.len());
 
         for (idx, c) in self.tableau.cs.iter().enumerate() {
-            //dbg!(idx);
             // We currently calculate k_idx
             let t_sample = t + h * *c;
-            let mut sample_vals: Vec<f64> = (0..dfs.len()).map(|_| 0.0).collect();
-            //dbg!(&sample_vals);
+            let mut sample_vals: Vec<f64> = make_zero_vec(dfs.len());
             // For the current row take all as that are below the diagonal
             for (idx_inner, a) in self.tableau.coeffs[idx].iter().enumerate().take(idx) {
-                //dbg!(idx_inner);
-                //dbg!(a);
                 // get the values in k_idx_inner, multiply with a and sum up
-                sample_vals = sample_vals.iter()
-                    .zip(ks[idx_inner].clone().iter().map(|k| a * k).collect::<Vec<f64>>())
-                    .map(|(x1, x2)| x1 + x2).collect();
-                //dbg!(&sample_vals);
+                sample_vals = sample_vals.pointwise_add(ks[idx_inner].clone().scalar_mul(*a));
             }
-            sample_vals = sample_vals.iter().zip(last_values.clone()).map(|(x, last)| last + x * h).collect();
+            sample_vals = sample_vals
+                .scalar_mul(h)
+                .pointwise_add(last_values.iter().map(|v| *v).collect());
 
-            //dbg!(t_sample);
-            //dbg!(&sample_vals);
-            //dbg!(&ks);
-            ks.push(dfs.iter().map(|f| f.value_at((t_sample, sample_vals.clone()))).collect());
+            ks.push(
+                dfs.iter()
+                    .map(|f| f.value_at((t_sample, sample_vals.clone())))
+                    .collect(),
+            );
         }
 
         ks
     }
 }
 
-impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> OneStepMethodStep<FT> for ExplicitRungeKuttaMethod<FT> {
+impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> OneStepMethodStep<FT>
+    for ExplicitRungeKuttaMethod<FT>
+{
     fn step(&self, dfs: &[FT], t: f64, last_values: &[f64], h: f64) -> Vec<f64> {
         let ks: Vec<Vec<f64>> = self.get_ks(dfs, t, last_values, h);
-        //dbg!(t);
-        //dbg!(&last_values);
-        //dbg!(&ks);
-        let change_term: Vec<f64> = self.tableau
-            .bs.iter()
+        let change_term: Vec<f64> = self
+            .tableau
+            .bs
+            .iter()
             .zip(ks)
-            .map(|(b, k)| k.iter().map(|kv| b * kv).collect::<Vec<f64>>())
-            .fold(
-                (0..dfs.len()).map(|_| 0.0).collect(),
-                |v1, v2| v1.iter().zip(v2).map(|(val1, val2)| val1 + val2).collect(),
-            );
+            .map(|(b, k)| k.scalar_mul(*b))
+            .fold(make_zero_vec(dfs.len()), |v1, v2| v1.pointwise_add(v2));
 
-        //dbg!(last_values);
-        //dbg!(h);
-        //dbg!(&change_term);
-        //dbg!(&change_term);
-        let result = last_values.iter().zip(change_term.iter().map(|x| x * h)).map(|(x, last)| last + x).collect();
+        let result = change_term
+            .scalar_mul(h)
+            .pointwise_add(last_values.iter().map(|v| *v).collect());
 
-        //dbg!(&result);
         result
     }
 }
 
+/// Creates a new Runge-Kutta method for the given system and tableau.
+/// Intended to be re-exported via functions with fixed tableaus, e.g. for classical RK.
+/// The resulting method can be sampled at any t.
+///
+/// # Example
+/// ```
+///    use ngdl_rust::explicit_runge_kutta::{make_explicit_runge_kutta_with_tableau, Tableau};
+///    use ngdl_rust::definitions::{Function, InitialValueSystemProblem};
+///
+///    let dfr: Function<(f64, Vec<f64>)> = |(_, v)| v[1]*v[0];
+///    let dfz: Function<(f64, Vec<f64>)> = |(_, v)| 5.0 * v[1];
+///
+///    let problem = InitialValueSystemProblem::new(0.0, vec![0.0, -1.0], vec![dfr, dfz]);
+///    let tableau = Tableau::new(
+///        vec![0.0, 0.5, 1.0, 1.0], // cs
+///        vec![1.0 / 6.0, 2.0 / 3.0, 0.0, 1.0 / 6.0], // bs
+///        vec![vec![],
+///             vec![0.5],
+///             vec![0.0, 1.0],
+///             vec![0.0, 0.0, 1.0]], //as
+///    );
+///
+///    let rk_method = make_explicit_runge_kutta_with_tableau(problem, 0.1, tableau);
+///
+///    let approximation = rk_method.interval(3.14, 0);
+/// ```
 pub fn make_explicit_runge_kutta_with_tableau<FT: SampleableFunction<(f64, Vec<f64>), f64>>(
     ivp: InitialValueSystemProblem<FT>,
     h: f64,

@@ -1,0 +1,2 @@
+Convergence order for the normal euler method: 0.9763862175618617
+Convergence order for the improved euler method: 1.981103507166693

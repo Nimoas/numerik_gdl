@@ -1,5 +1,5 @@
 use crate::definitions::{Closure1D, Function1D, Interval, Point2D};
-use crate::{sqrt, ln};
+use crate::{ln, sqrt};
 
 /// Takes the interval and splits it into n sub-intervals.
 /// Returns the resulting n+1 boundary points.
@@ -49,10 +49,17 @@ pub fn get_convergence_order(abs_errors: &[f64], hs: &[f64]) -> f64 {
         .zip(hs)
         .zip(abs_errors.iter().skip(1))
         .zip(hs.iter().skip(1))
-        .map(|(((abs_error, h1), abs_error2), h2)| (ln!(abs_error2) - ln!(abs_error)) / (ln!(h2) - ln!(h1)))
+        .map(|(((abs_error, h1), abs_error2), h2)| {
+            (ln!(abs_error2) - ln!(abs_error)) / (ln!(h2) - ln!(h1))
+        })
         .collect();
 
     ps.iter().sum::<f64>() / ps.len() as f64
+}
+
+/// Make a vector of the given length only containing zeroes.
+pub fn make_zero_vec(len: usize) -> Vec<f64> {
+    (0..len).map(|_| 0.0).collect()
 }
 
 /// abs(x)
