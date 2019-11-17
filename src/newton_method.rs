@@ -1,7 +1,7 @@
 use crate::abs;
 use crate::definitions::{DifferentiableFunction, SampleableFunction};
 
-pub fn newton_method<F: DifferentiableFunction<(f64, f64)>>(
+pub fn newton_method<F: DifferentiableFunction<(f64, f64), f64>>(
     func: F,
     t: f64,
     start_x: f64,
@@ -23,7 +23,7 @@ pub fn newton_method<F: DifferentiableFunction<(f64, f64)>>(
     current
 }
 
-fn newton_step<F: DifferentiableFunction<(f64, f64)>>(func: &F, t: f64, val: f64) -> f64 {
+fn newton_step<F: DifferentiableFunction<(f64, f64), f64>>(func: &F, t: f64, val: f64) -> f64 {
     val - (func.value_at((t, val)) / func.derivative_at((t, val)))
 }
 

@@ -64,14 +64,14 @@ impl<T> SampleableFunction<T, f64> for SimpleDifferentiableFunction<T> {
     }
 }
 
-impl<T> DifferentiableFunction<T> for SimpleDifferentiableFunction<T> {
+impl<T> DifferentiableFunction<T, f64> for SimpleDifferentiableFunction<T> {
     fn derivative_at(&self, input: T) -> f64 {
         (self.df)(input)
     }
 }
 
 /// Implementation for SampleableFunction that uses Closure<T>.
-#[derive(new)]
+#[derive(new, Clone)]
 pub struct ClosureSampleableFunction<T, Data: Copy> {
     data: Data,
     f: Closure<T, Data>,
@@ -97,7 +97,7 @@ impl<T, Data: Copy> SampleableFunction<T, f64> for ClosureDifferentiableFunction
     }
 }
 
-impl<T, Data: Copy> DifferentiableFunction<T> for ClosureDifferentiableFunction<T, Data> {
+impl<T, Data: Copy> DifferentiableFunction<T, f64> for ClosureDifferentiableFunction<T, Data> {
     fn derivative_at(&self, input: T) -> f64 {
         (self.df)(input, self.data)
     }
@@ -121,7 +121,7 @@ pub struct ComposeSampleableFunction<
 }
 
 impl<T, R, R2, FT: SampleableFunction<T, R>, FT2: SampleableFunction<R, R2>>
-    SampleableFunction<T, R2> for ComposeSampleableFunction<T, R, R2, FT, FT2>
+SampleableFunction<T, R2> for ComposeSampleableFunction<T, R, R2, FT, FT2>
 {
     fn value_at(&self, input: T) -> R2 {
         self.outer.value_at(self.inner.value_at(input))
@@ -143,7 +143,7 @@ pub struct SubSampleableFunction<
 }
 
 impl<T: Clone, R: Subtractible, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
-    SampleableFunction<T, R> for SubSampleableFunction<T, R, FT, FT2>
+SampleableFunction<T, R> for SubSampleableFunction<T, R, FT, FT2>
 {
     fn value_at(&self, input: T) -> R {
         self.a
@@ -156,7 +156,7 @@ impl<T: Clone, R: Subtractible, FT: SampleableFunction<T, R>, FT2: SampleableFun
 #[derive(new)]
 pub struct MultSampleableFunction<
     T,
-    R: Mul<Output = R>,
+    R: Mul<Output=R>,
     FT: SampleableFunction<T, R>,
     FT2: SampleableFunction<T, R>,
 > {
@@ -166,8 +166,8 @@ pub struct MultSampleableFunction<
     b: FT2,
 }
 
-impl<T: Clone, R: Mul<Output = R>, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
-    SampleableFunction<T, R> for MultSampleableFunction<T, R, FT, FT2>
+impl<T: Clone, R: Mul<Output=R>, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
+SampleableFunction<T, R> for MultSampleableFunction<T, R, FT, FT2>
 {
     fn value_at(&self, input: T) -> R {
         self.a
@@ -176,11 +176,24 @@ impl<T: Clone, R: Mul<Output = R>, FT: SampleableFunction<T, R>, FT2: Sampleable
     }
 }
 
+#[derive(new)]
+pub struct SampledDerivative<T, R, FT: DifferentiableFunction<T, R>> {
+    _t: PhantomData<T>,
+    _r: PhantomData<R>,
+    f: FT
+}
+
+impl<T, R, FT: DifferentiableFunction<T, R>> SampleableFunction<T, R> for SampledDerivative<T, R, FT> {
+    fn value_at(&self, input: T) -> R {
+        self.f.derivative_at(input)
+    }
+}
+
 /// Describes a one time differentiable f -> R.
 /// Note that continuity of the function is not enforced and let to the user.
-pub trait DifferentiableFunction<T>: SampleableFunction<T, f64> {
+pub trait DifferentiableFunction<T, R>: SampleableFunction<T, R> {
     /// f'(input)
-    fn derivative_at(&self, input: T) -> f64;
+    fn derivative_at(&self, input: T) -> R;
 }
 
 /// Describes a function -> R that can be sampled at every point of T (whatever that currently is).

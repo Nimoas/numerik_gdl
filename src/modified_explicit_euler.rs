@@ -1,18 +1,18 @@
 use crate::definitions::{InitialValueProblem, DifferentiableFunction, Point2D};
 
 /// Simple implementation of the step taken during the explicit euler function.
-fn modified_explicit_euler_step<FT: DifferentiableFunction<(f64, f64)>>(df: &FT, t: f64, last_value: f64, h: f64) -> f64 {
+fn modified_explicit_euler_step<FT: DifferentiableFunction<(f64, f64), f64>>(df: &FT, t: f64, last_value: f64, h: f64) -> f64 {
     last_value + h * df.value_at((t, last_value)) + (h * h / 2.0) * df.derivative_at((t, last_value))
 }
 
-/// Simple implementation of the explicit euler method.
+/// Modified implementation of the explicit euler method using y'' as well.
 /// Lands on target even if h does not match.
 ///
 /// # Arguments
 ///
 /// * `ivp` - The initial value problem we want to approximate
 /// * `h` - Step size of the algorithm
-/// * `t_target` - Target time we want to get the value for. Note that this should be directly reachable with t0 + k * h
+/// * `t_target` - Target time we want to get the value for.
 ///
 /// # Example
 /// ```
@@ -22,26 +22,25 @@ fn modified_explicit_euler_step<FT: DifferentiableFunction<(f64, f64)>>(df: &FT,
 /// let ivp: InitialValueProblem<Function2D> = InitialValueProblem::new(0.0, 1.0, |(_, x)| x*x);
 /// dbg!(explicit_euler(ivp, 0.001, 1.0));
 /// ```
-pub fn modified_explicit_euler<FT: DifferentiableFunction<(f64, f64)>>(ivp: InitialValueProblem<FT>, h: f64, t_target: f64) -> f64 {
+pub fn modified_explicit_euler<FT: DifferentiableFunction<(f64, f64), f64>>(ivp: InitialValueProblem<FT>, h: f64, t_target: f64) -> f64 {
     modified_explicit_euler_interval(ivp, h, t_target, 0)
         .last()
         .unwrap()
         .y
 }
 
-/// Simple implementation of the explicit euler method.
+/// Modified implementation of the explicit euler method using y'' as well.
 /// Lands on target even if h does not match.
 /// The function returns the intermediate values as well as the final value in the form of a point vector
-/// Piggy-backs on the multi-dimensional implementation.
 ///
 /// # Arguments
 ///
 /// * `ivp` - The initial value problem we want to approximate
 /// * `h` - Step size of the algorithm
-/// * `t_target` - Target time we want to get the value for. Note that this should be directly reachable with t0 + k * h
+/// * `t_target` - Target time we want to get the value for.
 /// * `skip_n` - If > 0 only returns ever n-th value to reduce memory footprint while retaining smaller h
 ///
-pub fn modified_explicit_euler_interval<FT: DifferentiableFunction<(f64, f64)>>(
+pub fn modified_explicit_euler_interval<FT: DifferentiableFunction<(f64, f64), f64>>(
     ivp: InitialValueProblem<FT>,
     h: f64,
     t_target: f64,

@@ -7,8 +7,9 @@ use gnuplot::Figure;
 use ngdl_rust::plot_util::plot_line_on;
 use gnuplot::PlotOption::{Caption, Color};
 use rayon::prelude::*;
+use ngdl_rust::explicit_runge_kutta::{make_explicit_runge_kutta_with_tableau, Tableau};
 
-const IMAGE_DIR: &str = "./img_task05_2/";
+const IMAGE_DIR: &str = "./img_task05_4/";
 const SIGMA: f64 = 0.07274;
 const GRAVITY: f64 = 0.00981;
 const OTHER_CONSTANT: f64 = 0.0000009982;
@@ -16,13 +17,11 @@ const OTHER_CONSTANT: f64 = 0.0000009982;
 fn main() -> Result<(), Box<dyn Error>> {
     create_dir_all(IMAGE_DIR)?;
 
-    let ks = vec![0.2, 0.3/*, 0.4, 0.5*/];
+    let ks = vec![0.2, 0.3, 0.4, 0.5];
     let h = 0.0001;
     let s = 40.0;
 
-    let hs  = vec![0.0001, 0.000105, 0.00001];
-
-    hs.par_iter().for_each(|hn| evaluate(ks[0], *hn, s));
+    ks.par_iter().for_each(|k| evaluate(*k, h, s));
 
     Ok(())
 }
@@ -41,20 +40,31 @@ fn create_problem(ks: f64) -> InitialValueSystemProblem<ClosureSampleableFunctio
 
 fn evaluate(ks: f64, h: f64, s: f64) {
     let problem = create_problem(ks);
+    let tableau = Tableau::new(
+        vec![0.0, 0.5, 1.0, 1.0], // cs
+        vec![1.0 / 6.0, 2.0 / 3.0, 0.0, 1.0 / 6.0], // bs
+        vec![vec![],
+             vec![0.5],
+             vec![0.0, 1.0],
+             vec![0.0, 0.0, 1.0]], //as
+    );
 
-    let approximation = explicit_euler_system_interval(&problem, h, s, 0);
+    let rk_method = make_explicit_runge_kutta_with_tableau(problem, h, tableau);
 
-    let rs: Vec<f64> = approximation.iter().map(|v| v[0].y).collect();
-    let zs: Vec<f64> = approximation.iter().map(|v| v[1].y).collect();
+    let approximation2 = rk_method.interval( s, 0);
 
-    let to_plot: Vec<_> = rs.iter().zip(zs).map(|(r, z)| Point2D::new(*r, z)).collect();
+
+    let rs2: Vec<f64> = approximation2.iter().map(|v| v[0].y).collect();
+    let zs2: Vec<f64> = approximation2.iter().map(|v| v[1].y).collect();
+
+    let to_plot2: Vec<_> = rs2.iter().zip(zs2).map(|(r, z)| Point2D::new(*r, z)).collect();
 
     let mut fg = Figure::new();
     let axis = fg.axes2d();
     plot_line_on(
         axis,
-        &to_plot,
-        &[Caption(&format!("k_s = {} mm^-^1 with h = {}", ks, h)), Color("black")],
+        &to_plot2,
+        &[Caption(&format!("RK: k_s = {} mm^-^1 with h = {}", ks, h)), Color("black")],
     );
 
     fg.show()
