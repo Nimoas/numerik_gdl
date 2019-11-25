@@ -102,3 +102,17 @@ pub fn make_explicit_runge_kutta_with_tableau<FT: SampleableFunction<(f64, Vec<f
 ) -> OneStepMethod<FT, ExplicitRungeKuttaMethod<FT>> {
     OneStepMethod::new(ExplicitRungeKuttaMethod::new(tableau), ivp, h)
 }
+
+/// Classic 4-th order explicit RK method.
+pub fn make_classic_runge_kutta<FT: SampleableFunction<(f64, Vec<f64>), f64>>(
+    ivp: InitialValueSystemProblem<FT>,
+    h: f64,
+) -> OneStepMethod<FT, ExplicitRungeKuttaMethod<FT>> {
+    let tableau = Tableau::new(
+        vec![0.0, 0.5, 0.5, 1.0],                         // cs
+        vec![1.0 / 6.0, 1.0 / 3.0, 1.0 / 3.0, 1.0 / 6.0], // bs
+        vec![vec![], vec![0.5], vec![0.0, 0.5], vec![0.0, 0.0, 1.0]],
+    );
+
+    OneStepMethod::new(ExplicitRungeKuttaMethod::new(tableau), ivp, h)
+}

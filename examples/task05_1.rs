@@ -45,12 +45,20 @@ fn main() -> Result<(), Box<dyn Error>> {
     plot_line_points_on(
         axis,
         &approximation,
-        &[Caption("Approximation using the explicit euler method"), Color("red"), PointSymbol('o')],
+        &[
+            Caption("Approximation using the explicit euler method"),
+            Color("red"),
+            PointSymbol('o'),
+        ],
     );
     plot_line_points_on(
         axis,
         &approximation2,
-        &[Caption("Approximation using the improved explicit euler method"), Color("blue"), PointSymbol('x')],
+        &[
+            Caption("Approximation using the improved explicit euler method"),
+            Color("blue"),
+            PointSymbol('x'),
+        ],
     );
     plot_line_on(
         axis,
@@ -84,8 +92,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|aprox| abs!(aprox - exact_at_2))
         .collect();
 
-    println!("Convergence order for the normal euler method: {}", get_convergence_order(&normal_abs_error, &hs));
-    println!("Convergence order for the improved euler method: {}", get_convergence_order(&modified_abs_error, &hs));
+    println!(
+        "Convergence order for the normal euler method: {}",
+        get_convergence_order(&normal_abs_error, &hs)
+    );
+    println!(
+        "Convergence order for the improved euler method: {}",
+        get_convergence_order(&modified_abs_error, &hs)
+    );
 
     Ok(())
 }
