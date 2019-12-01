@@ -1,0 +1,22 @@
+SSE for problem_1 with classic ERK method: 1.0343426279491044e-11
+MSE for problem_1 with classic ERK method: 2.57940804974839e-14
+
+SSE for problem_1 with England ERK method: 1.0343426277212524e-11
+MSE for problem_1 with England ERK method: 2.5794080491801804e-14
+
+SSE for problem_1 with 3/8 ERK method: 1.0022129695751676e-7
+MSE for problem_1 with 3/8 ERK method: 2.499284213404408e-10
+
+
+
+SSE for problem_2 with classic ERK method: 1.443902107302867e3
+MSE for problem_2 with classic ERK method: 9.562265611277265e0
+
+SSE for problem_2 with England ERK method: 1.4439021073028673e3
+MSE for problem_2 with England ERK method: 9.562265611277267e0
+
+SSE for problem_2 with 3/8 ERK method: 1.4509528752863569e3
+MSE for problem_2 with 3/8 ERK method: 9.608959438982495e0
+
+
+
