@@ -1,0 +1,4 @@
+Kurz zur Umsetzung:
+* Habe die Ortsvektoren in x und y Komponente aufgespalten.
+* Dann einfach ein DGL System via einer Zusatzvariable für jede 2. Ableitung.
+* => 12 Gleichungen.

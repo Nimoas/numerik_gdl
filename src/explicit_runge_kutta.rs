@@ -76,7 +76,7 @@ impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> OneStepMethodStep<FT>
 /// # Example
 /// ```
 ///    use ngdl_rust::explicit_runge_kutta::{make_explicit_runge_kutta_with_tableau, Tableau};
-///    use ngdl_rust::definitions::{Function, InitialValueSystemProblem};
+///    use ngdl_rust::definitions::{Function, InitialValueSystemProblem, ODEMethod};
 ///
 ///    let dfr: Function<(f64, Vec<f64>)> = |(_, v)| v[1]*v[0];
 ///    let dfz: Function<(f64, Vec<f64>)> = |(_, v)| 5.0 * v[1];
@@ -123,7 +123,7 @@ pub fn make_england_runge_kutta<FT: SampleableFunction<(f64, Vec<f64>), f64>>(
     h: f64,
 ) -> OneStepMethod<FT, ExplicitRungeKuttaMethod<FT>> {
     let tableau = Tableau::new(
-        vec![0.0, 0.5, 0.5, 1.0],                         // cs
+        vec![0.0, 0.5, 0.5, 1.0],                   // cs
         vec![1.0 / 6.0, 0.0, 2.0 / 3.0, 1.0 / 6.0], // bs
         vec![vec![], vec![0.5], vec![0.25, 0.25], vec![0.0, -1.0, 2.0]],
     );
@@ -137,7 +137,7 @@ pub fn make_three_eight_runge_kutta<FT: SampleableFunction<(f64, Vec<f64>), f64>
     h: f64,
 ) -> OneStepMethod<FT, ExplicitRungeKuttaMethod<FT>> {
     let tableau = Tableau::new(
-        vec![0.0, 0.5, 1.0, 1.0],                         // cs
+        vec![0.0, 0.5, 1.0, 1.0],                   // cs
         vec![1.0 / 6.0, 2.0 / 3.0, 0.0, 1.0 / 6.0], // bs
         vec![vec![], vec![0.5], vec![0.0, 1.0], vec![0.0, 0.0, 1.0]],
     );

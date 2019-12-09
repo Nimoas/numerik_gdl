@@ -145,7 +145,7 @@ pub struct ComposeSampleableFunction<
 }
 
 impl<T, R, R2, FT: SampleableFunction<T, R>, FT2: SampleableFunction<R, R2>>
-    SampleableFunction<T, R2> for ComposeSampleableFunction<T, R, R2, FT, FT2>
+SampleableFunction<T, R2> for ComposeSampleableFunction<T, R, R2, FT, FT2>
 {
     fn value_at(&self, input: T) -> R2 {
         self.outer.value_at(self.inner.value_at(input))
@@ -167,7 +167,7 @@ pub struct SubSampleableFunction<
 }
 
 impl<T: Clone, R: PointwiseSub, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
-    SampleableFunction<T, R> for SubSampleableFunction<T, R, FT, FT2>
+SampleableFunction<T, R> for SubSampleableFunction<T, R, FT, FT2>
 {
     fn value_at(&self, input: T) -> R {
         self.a
@@ -180,7 +180,7 @@ impl<T: Clone, R: PointwiseSub, FT: SampleableFunction<T, R>, FT2: SampleableFun
 #[derive(new)]
 pub struct MultSampleableFunction<
     T,
-    R: Mul<Output = R>,
+    R: Mul<Output=R>,
     FT: SampleableFunction<T, R>,
     FT2: SampleableFunction<T, R>,
 > {
@@ -190,8 +190,8 @@ pub struct MultSampleableFunction<
     b: FT2,
 }
 
-impl<T: Clone, R: Mul<Output = R>, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
-    SampleableFunction<T, R> for MultSampleableFunction<T, R, FT, FT2>
+impl<T: Clone, R: Mul<Output=R>, FT: SampleableFunction<T, R>, FT2: SampleableFunction<T, R>>
+SampleableFunction<T, R> for MultSampleableFunction<T, R, FT, FT2>
 {
     fn value_at(&self, input: T) -> R {
         self.a
@@ -209,7 +209,7 @@ pub struct SampledDerivative<T, R, FT: DifferentiableFunction<T, R>> {
 }
 
 impl<T, R, FT: DifferentiableFunction<T, R>> SampleableFunction<T, R>
-    for SampledDerivative<T, R, FT>
+for SampledDerivative<T, R, FT>
 {
     fn value_at(&self, input: T) -> R {
         self.f.derivative_at(input)
@@ -238,6 +238,15 @@ pub struct Point2D {
     pub x: f64,
     /// y coordinate
     pub y: f64,
+}
+
+impl Point2D {
+    pub fn make_vec(xs: Vec<f64>, ys: Vec<f64>) -> Vec<Point2D> {
+        xs.iter()
+            .zip(ys.iter())
+            .map(|(x, y)| Point2D::new(*x, *y))
+            .collect()
+    }
 }
 
 /// Inclusive interval of the form [a, b] < R
@@ -325,4 +334,18 @@ pub struct BoundaryValueProblem {
     pub start_value: f64,
     /// f(interval.end())
     pub end_value: f64,
+}
+
+pub trait ODEMethod {
+    /// Note that the result is a vector over t of the values at the points of the inner vector.
+    fn interval(&self, t_target: f64, skip_n: isize) -> Vec<Vec<Point2D>>;
+}
+
+impl<ODEM: ODEMethod>
+SampleableFunction<f64, Vec<f64>> for ODEM
+{
+    fn value_at(&self, t_target: f64) -> Vec<f64> {
+        let results = self.interval(t_target, 0);
+        results.last().unwrap().iter().map(|p| p.y).collect()
+    }
 }

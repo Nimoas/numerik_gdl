@@ -15,6 +15,7 @@ mod generalized_explicit_one_step_method;
 pub mod implicit_euler;
 /// Explicit euler also using the derivative of the given DGL.
 pub mod modified_explicit_euler;
+pub mod adams_bashfoth;
 mod newton_method;
 /// Little plot helpers to reduce boilerplate
 pub mod plot_util;

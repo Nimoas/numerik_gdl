@@ -1,8 +1,4 @@
-use crate::definitions::{
-    ComposeSampleableFunction, Function, Function2D, FunctionND, InitialValueProblem,
-    InitialValueSystemProblem, Point2D, PointwiseAdd, SampleableFunction, ScalarMul,
-    SubSampleableFunction,
-};
+use crate::definitions::{ComposeSampleableFunction, Function, Function2D, FunctionND, InitialValueProblem, InitialValueSystemProblem, Point2D, PointwiseAdd, SampleableFunction, ScalarMul, SubSampleableFunction, ODEMethod};
 use crate::generalized_explicit_one_step_method::{OneStepMethod, OneStepMethodStep};
 use crate::util::euclidean_norm;
 use rayon::prelude::*;

@@ -1,5 +1,5 @@
 use crate::definitions::{
-    DifferentiableFunction, InitialValueSystemProblem, Point2D, SampleableFunction,
+    DifferentiableFunction, InitialValueSystemProblem, ODEMethod, Point2D, SampleableFunction,
     SampledDerivative,
 };
 use crate::{abs, ceil};
@@ -18,10 +18,10 @@ pub struct OneStepMethod<FT: SampleableFunction<(f64, Vec<f64>), f64>, STEP: One
     h: f64,
 }
 
-impl<FT: SampleableFunction<(f64, Vec<f64>), f64>, STEP: OneStepMethodStep<FT>>
-    OneStepMethod<FT, STEP>
+impl<FT: SampleableFunction<(f64, Vec<f64>), f64>, STEP: OneStepMethodStep<FT>> ODEMethod
+    for OneStepMethod<FT, STEP>
 {
-    pub fn interval(&self, t_target: f64, skip_n: isize) -> Vec<Vec<Point2D>> {
+    fn interval(&self, t_target: f64, skip_n: isize) -> Vec<Vec<Point2D>> {
         let mut skip: isize = skip_n;
         let mut t = self.ivp.start_time;
         let mut values = self.ivp.start_values.clone();
@@ -55,18 +55,13 @@ impl<FT: SampleableFunction<(f64, Vec<f64>), f64>, STEP: OneStepMethodStep<FT>>
         );
         intermediate_values
     }
-
-    pub fn get_derivative(self) -> SampledDerivative<f64, Vec<f64>, Self> {
-        SampledDerivative::new(self)
-    }
 }
 
 impl<FT: SampleableFunction<(f64, Vec<f64>), f64>, STEP: OneStepMethodStep<FT>>
-    SampleableFunction<f64, Vec<f64>> for OneStepMethod<FT, STEP>
+    OneStepMethod<FT, STEP>
 {
-    fn value_at(&self, t_target: f64) -> Vec<f64> {
-        let results = self.interval(t_target, 0);
-        results.last().unwrap().iter().map(|p| p.y).collect()
+    pub fn get_derivative(self) -> SampledDerivative<f64, Vec<f64>, Self> {
+        SampledDerivative::new(self)
     }
 }
 
