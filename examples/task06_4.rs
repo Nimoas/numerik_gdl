@@ -1,7 +1,9 @@
 use gnuplot::Coordinate::Graph;
 use gnuplot::Figure;
 use gnuplot::PlotOption::{Caption, Color, PointSymbol};
-use ngdl_rust::definitions::{ClosureSampleableFunction, Function1D, InitialValueSystemProblem, Interval, Point2D, ODEMethod};
+use ngdl_rust::definitions::{
+    ClosureSampleableFunction, Function1D, InitialValueSystemProblem, Interval, ODEMethod, Point2D,
+};
 use ngdl_rust::euler_explicit::make_explicit_euler_method_system;
 use ngdl_rust::explicit_runge_kutta::make_classic_runge_kutta;
 use ngdl_rust::plot_util::{plot_line_on, plot_line_points_on};

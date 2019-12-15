@@ -1,6 +1,6 @@
 use gnuplot::Figure;
 use gnuplot::PlotOption::{Caption, Color};
-use ngdl_rust::definitions::{Function, InitialValueSystemProblem, Interval, Point2D, ODEMethod};
+use ngdl_rust::definitions::{Function, InitialValueSystemProblem, Interval, ODEMethod, Point2D};
 use ngdl_rust::explicit_runge_kutta::{
     make_classic_runge_kutta, make_england_runge_kutta, make_three_eight_runge_kutta,
 };

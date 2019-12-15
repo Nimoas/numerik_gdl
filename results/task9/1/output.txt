@@ -1,0 +1,37 @@
+Exact value at 1: 1.947734041054676
+
+Testing Adams Bashforth 2nd order
+Avrg. convergence order with Euler method: 2.063243720127271
+Avrg. convergence order with 2nd order RK method: 2.063243720127271
+Avrg. convergence order with Heun method: 2.063243720127271
+Avrg. convergence order with classical RK method: 2.063243720127271
+
+Testing Adams Bashforth 3rd order
+Avrg. convergence order with Euler method: 2.6243716436935554
+Avrg. convergence order with 2nd order RK method: 2.6243716436935554
+Avrg. convergence order with Heun method: 2.6243716436935554
+Avrg. convergence order with classical RK method: 2.6243716436935554
+
+Testing (explicitlyfied) Adam Moulton 4th order (3 steps)
+Avrg. convergence order with Euler method: 2.0062804770143967
+Avrg. convergence order with 2nd order RK method: 2.0062804770143967
+Avrg. convergence order with Heun method: 2.0062804770143967
+Avrg. convergence order with classical RK method: 2.0062804770143967
+
+Testing Nyström 3rd order
+Avrg. convergence order with Euler method: 2.17295403059471
+Avrg. convergence order with 2nd order RK method: 2.17295403059471
+Avrg. convergence order with Heun method: 2.17295403059471
+Avrg. convergence order with classical RK method: 2.17295403059471
+
+Testing Milne Simpson
+Avrg. convergence order with Euler method: 2.440878128169219
+Avrg. convergence order with 2nd order RK method: 2.440878128169219
+Avrg. convergence order with Heun method: 2.440878128169219
+Avrg. convergence order with classical RK method: 2.440878128169219
+
+Testing (explicitlyfied) Milne Simpson
+Avrg. convergence order with Euler method: 2.1501770894444645
+Avrg. convergence order with 2nd order RK method: 2.1501770894444645
+Avrg. convergence order with Heun method: 2.1501770894444645
+Avrg. convergence order with classical RK method: 2.1501770894444645

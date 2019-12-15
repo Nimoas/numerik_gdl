@@ -53,7 +53,14 @@ pub fn euclidean_norm(v: Vec<f64>) -> f64 {
 /// Specialty function for task 1.
 /// Could be made more general.
 pub fn get_convergence_order(abs_errors: &[f64], hs: &[f64]) -> f64 {
-    let ps: Vec<f64> = abs_errors
+    let ps = get_all_convergence_orders(abs_errors, hs);
+
+    ps.iter().sum::<f64>() / ps.len() as f64
+}
+
+/// Calculates the numeric convergence order for every two consecutive samples.
+pub fn get_all_convergence_orders(abs_errors: &[f64], hs: &[f64]) -> Vec<f64> {
+    abs_errors
         .iter()
         .zip(hs)
         .zip(abs_errors.iter().skip(1))
@@ -61,9 +68,7 @@ pub fn get_convergence_order(abs_errors: &[f64], hs: &[f64]) -> f64 {
         .map(|(((abs_error, h1), abs_error2), h2)| {
             (ln!(abs_error2) - ln!(abs_error)) / (ln!(h2) - ln!(h1))
         })
-        .collect();
-
-    ps.iter().sum::<f64>() / ps.len() as f64
+        .collect()
 }
 
 /// Make a vector of the given length only containing zeroes.

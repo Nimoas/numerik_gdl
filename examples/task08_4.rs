@@ -1,6 +1,7 @@
 use gnuplot::Figure;
 use gnuplot::PlotOption::{Caption, Color};
-use ngdl_rust::definitions::{Function, InitialValueSystemProblem, Point2D, ODEMethod};
+use ngdl_rust::adams_bashforth::make_adams_bashforth_2_method;
+use ngdl_rust::definitions::{Function, InitialValueSystemProblem, ODEMethod, Point2D};
 use ngdl_rust::euler_explicit::make_explicit_euler_method_system;
 use ngdl_rust::explicit_runge_kutta::make_classic_runge_kutta;
 use ngdl_rust::plot_util::{plot_line_on, plot_line_points_on};
@@ -8,7 +9,6 @@ use ngdl_rust::{powi, sqrt};
 use std::error::Error;
 use std::fs::create_dir_all;
 use std::ops::Add;
-use ngdl_rust::adams_bashfoth::make_adams_bashforth_method;
 
 const IMAGE_DIR: &str = "./img_task08_4/";
 
@@ -20,7 +20,7 @@ const MASS_SUN: f64 = 1_990_000_000_000_000_000_000_000_000_000.0;
 fn main() -> Result<(), Box<dyn Error>> {
     create_dir_all(IMAGE_DIR)?;
 
-    let t_target = 3.0*59_400_000.0; // ~ Seconds in a year on Mars
+    let t_target = 3.0 * 59_400_000.0; // ~ Seconds in a year on Mars
 
     test_euler(t_target);
     test_runge_kutta(t_target);
@@ -73,7 +73,9 @@ fn test_euler(t_target: f64) {
 fn test_adams_bashforth(t_target: f64) {
     let h = 10000.0;
 
-    let ab_method = make_adams_bashforth_method(create_problem, h);
+    let ab_method = make_adams_bashforth_2_method(create_problem, h, |ivp, h| {
+        make_explicit_euler_method_system(ivp, h)
+    });
     let data = ab_method.interval(t_target, 0);
 
     plot_data(data, "adams_bashforth");

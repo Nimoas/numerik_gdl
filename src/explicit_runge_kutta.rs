@@ -144,3 +144,31 @@ pub fn make_three_eight_runge_kutta<FT: SampleableFunction<(f64, Vec<f64>), f64>
 
     OneStepMethod::new(ExplicitRungeKuttaMethod::new(tableau), ivp, h)
 }
+
+/// 2 Step RK Method of order 2.
+pub fn make_2nd_order_runge_kutta<FT: SampleableFunction<(f64, Vec<f64>), f64>>(
+    ivp: InitialValueSystemProblem<FT>,
+    h: f64,
+) -> OneStepMethod<FT, ExplicitRungeKuttaMethod<FT>> {
+    let tableau = Tableau::new(
+        vec![0.0, 0.5], // cs
+        vec![0.0, 1.0], // bs
+        vec![vec![], vec![0.5]],
+    );
+
+    OneStepMethod::new(ExplicitRungeKuttaMethod::new(tableau), ivp, h)
+}
+
+/// Heun Method of order 3.
+pub fn make_heun_method<FT: SampleableFunction<(f64, Vec<f64>), f64>>(
+    ivp: InitialValueSystemProblem<FT>,
+    h: f64,
+) -> OneStepMethod<FT, ExplicitRungeKuttaMethod<FT>> {
+    let tableau = Tableau::new(
+        vec![0.0, 1.0 / 3.0, 2.0 / 3.0], // cs
+        vec![0.25, 0.0, 0.75],           // bs
+        vec![vec![], vec![1.0 / 3.0], vec![0.0, 2.0 / 3.0]],
+    );
+
+    OneStepMethod::new(ExplicitRungeKuttaMethod::new(tableau), ivp, h)
+}

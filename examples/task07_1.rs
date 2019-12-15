@@ -1,10 +1,7 @@
 use gnuplot::Figure;
 use gnuplot::PlotOption::{Caption, Color};
-use itertools::izip;
-use ngdl_rust::definitions::{ClosureSampleableFunction, Function, InitialValueSystemProblem, Interval, Point2D, ODEMethod};
-use ngdl_rust::euler_explicit::{
-    explicit_euler_system_interval, make_explicit_euler_method_system,
-};
+use ngdl_rust::definitions::{Function, InitialValueSystemProblem, Interval, ODEMethod, Point2D};
+use ngdl_rust::euler_explicit::make_explicit_euler_method_system;
 use ngdl_rust::plot_util::{plot_line_on, plot_line_points_on};
 use ngdl_rust::util::sample_function_generic;
 use ngdl_rust::{cos, exp, sin};

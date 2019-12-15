@@ -1,6 +1,8 @@
 use gnuplot::Figure;
 use gnuplot::PlotOption::{Caption, Color};
-use ngdl_rust::definitions::{ClosureSampleableFunction, InitialValueSystemProblem, Point2D, ODEMethod};
+use ngdl_rust::definitions::{
+    ClosureSampleableFunction, InitialValueSystemProblem, ODEMethod, Point2D,
+};
 use ngdl_rust::explicit_runge_kutta::{make_explicit_runge_kutta_with_tableau, Tableau};
 use ngdl_rust::plot_util::plot_line_on;
 use ngdl_rust::{cos, sin};
