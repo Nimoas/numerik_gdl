@@ -28,7 +28,7 @@ use rayon::prelude::*;
 pub fn solve_bvp(problem: BoundaryValueProblem, n_grid: usize) -> Option<Vec<f64>> {
     // Setting up the sampled points
     let h = problem.interval.span() / (n_grid as f64 + 1.0);
-    let grid_x_values = &make_supporting_points(n_grid + 1, problem.interval)[1..n_grid + 1];
+    let grid_x_values = &make_supporting_points(n_grid + 1, problem.interval)[1..=n_grid];
 
     // Setting up the right hand side of the equation system.
     let mut right_side: Vec<f64> = grid_x_values
@@ -57,5 +57,5 @@ pub fn solve_bvp(problem: BoundaryValueProblem, n_grid: usize) -> Option<Vec<f64
     let decomposition = matrix.lu();
     decomposition
         .solve(&to_solve)
-        .map(|mat| mat.iter().map(|x| *x).collect())
+        .map(|mat| mat.iter().copied().collect())
 }

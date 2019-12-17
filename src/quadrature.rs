@@ -99,7 +99,6 @@ pub fn quadrature_test_run<FT: SampleableFunction<f64, f64>, QT: QuadratureFormu
     up_to_splits: usize,
 ) -> Vec<QuadratureTestResult> {
     (1..=up_to_splits)
-        .into_iter()
         .map(|n| {
             let value = quadrature(method, &f, interval, n);
             QuadratureTestResult {

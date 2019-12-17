@@ -33,7 +33,8 @@ impl<
         // Assume h is always small enough for this
         let start_method = (self.start_method_gen)((self.ivp_getter)(), self.h);
         let mut current_values: Vec<Vec<f64>> = vec![ivp.start_values];
-        for idx in 1..=self.k - 1 {
+        // k not in the range
+        for idx in 1..self.k {
             current_values.push(start_method.value_at(ivp.start_time + idx as f64 * self.h));
         }
 

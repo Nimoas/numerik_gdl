@@ -146,8 +146,8 @@ pub fn get_residual_function(
     let f_tmp = ComposeSampleableFunction::new(euler_method, f);
     let under_norm = SubSampleableFunction::new(slope_polygonal_spline, f_tmp);
     let f: Function<Vec<f64>> = |v| euclidean_norm(v);
-    let residual = ComposeSampleableFunction::new(under_norm, f);
-    residual
+    // Residual
+    ComposeSampleableFunction::new(under_norm, f)
 }
 
 /// Simple implementation of the step taken during the explicit euler function.
