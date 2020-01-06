@@ -172,7 +172,7 @@ impl<T: Clone, R: PointwiseSub, FT: SampleableFunction<T, R>, FT2: SampleableFun
     fn value_at(&self, input: T) -> R {
         self.a
             .value_at(input.clone())
-            .pointwise_sub(self.b.value_at(input.clone()))
+            .pointwise_sub(self.b.value_at(input))
     }
 }
 
@@ -194,9 +194,7 @@ impl<T: Clone, R: Mul<Output = R>, FT: SampleableFunction<T, R>, FT2: Sampleable
     SampleableFunction<T, R> for MultSampleableFunction<T, R, FT, FT2>
 {
     fn value_at(&self, input: T) -> R {
-        self.a
-            .value_at(input.clone())
-            .mul(self.b.value_at(input.clone()))
+        self.a.value_at(input.clone()).mul(self.b.value_at(input))
     }
 }
 

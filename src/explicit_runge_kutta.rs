@@ -35,7 +35,7 @@ impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> ExplicitRungeKuttaMethod<FT> 
             }
             sample_vals = sample_vals
                 .scalar_mul(h)
-                .pointwise_add(last_values.iter().map(|v| *v).collect());
+                .pointwise_add(last_values.iter().copied().collect());
 
             ks.push(
                 dfs.iter()
@@ -49,7 +49,7 @@ impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> ExplicitRungeKuttaMethod<FT> 
 }
 
 impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> OneStepMethodStep<FT>
-for ExplicitRungeKuttaMethod<FT>
+    for ExplicitRungeKuttaMethod<FT>
 {
     fn step(&self, dfs: &[FT], t: f64, last_values: &[f64], h: f64) -> Vec<f64> {
         let ks: Vec<Vec<f64>> = self.get_ks(dfs, t, last_values, h);
@@ -63,7 +63,7 @@ for ExplicitRungeKuttaMethod<FT>
 
         change_term
             .scalar_mul(h)
-            .pointwise_add(last_values.iter().map(|v| *v).collect())
+            .pointwise_add(last_values.iter().copied().collect())
     }
 }
 
