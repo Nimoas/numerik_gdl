@@ -1,0 +1,12 @@
+Solving for t_end = 0.3 with h = 0.001
+	Exact x(t_end) = 0.9886739393819
+	Exact y(t_end) = 0.00003447715743689
+	Exact z(t_end) = 0.01129158346063
+Explicit Euler method:
+	x'(t_end) = 0.9886739388676383
+	y'(t_end) = 0.00003447715752427623
+	z'(t_end) = 0.01129158397483676
+
+	error_x = 5.142616332776129e-10
+	error_y = 8.738623431640835e-14
+	error_z = 5.142067605046208e-10
