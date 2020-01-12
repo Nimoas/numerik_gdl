@@ -5,8 +5,7 @@ use ngdl_rust::definitions::{Function2D, InitialValueProblem, Interval, Point2D}
 use ngdl_rust::euler_explicit::explicit_euler_interval;
 use ngdl_rust::plot_util::{plot_line_on, plot_line_points_on};
 use ngdl_rust::util::sample_closure;
-use ngdl_rust::{powf, sqrt};
-use num::pow;
+use ngdl_rust::{powf, powi, sqrt};
 use std::error::Error;
 use std::fs::create_dir_all;
 use std::ops::Add;
@@ -17,7 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     create_dir_all(IMAGE_DIR)?;
 
     // @Me: Wrong! See notes from the exercise.
-    let exact = |x: f64, p: Point2D| 1.0 / pow(x + (1.0 / sqrt!(p.y)) - p.x, 2);
+    let exact = |x: f64, p: Point2D| 1.0 / powi!((x + (1.0 / sqrt!(p.y)) - p.x), 2);
     let exact_samples = 1000;
     let exact_sampled = sample_closure(
         exact,

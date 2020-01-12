@@ -7,9 +7,8 @@ use ngdl_rust::definitions::{
 use ngdl_rust::euler_explicit::make_explicit_euler_method_system;
 use ngdl_rust::explicit_runge_kutta::make_classic_runge_kutta;
 use ngdl_rust::plot_util::{plot_line_on, plot_line_points_on};
-use ngdl_rust::sqrt;
 use ngdl_rust::util::sample_function;
-use num::pow;
+use ngdl_rust::{powi, sqrt};
 use std::error::Error;
 use std::f64::consts::PI;
 use std::fs::create_dir_all;
@@ -24,7 +23,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let t_target = 1.0;
     let interval = Interval::new(0.0, t_target);
 
-    let exact: Function1D = |t| (pow(t, 4) / 144.0) + PI / 2.0;
+    let exact: Function1D = |t| (powi!(t, 4) / 144.0) + PI / 2.0;
 
     let exact_sampled = sample_function(exact, interval, 1000);
 
