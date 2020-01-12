@@ -1,6 +1,7 @@
 use crate::definitions::{Interval, SampleableFunction};
+use crate::ln;
 use crate::util::make_supporting_points;
-use crate::{abs, ln};
+use num::abs_sub;
 
 /// Results of a quadrature test run.
 /// Contains all data for further analysis.
@@ -103,7 +104,7 @@ pub fn quadrature_test_run<FT: SampleableFunction<f64, f64>, QT: QuadratureFormu
             let value = quadrature(method, &f, interval, n);
             QuadratureTestResult {
                 value,
-                abs_error: abs!(exact - value),
+                abs_error: abs_sub(exact, value),
                 splits_n: n,
                 h: interval.span() / n as f64,
             }

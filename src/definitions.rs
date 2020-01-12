@@ -1,5 +1,5 @@
-use crate::abs;
 use derive_new::*;
+use num::abs_sub;
 use std::fmt::{Display, Error, Formatter};
 use std::marker::PhantomData;
 use std::ops::Mul;
@@ -273,7 +273,7 @@ impl Interval {
 
     /// Returns the absolute difference between the start and end of the interval.
     pub fn span(&self) -> f64 {
-        abs!(self.start - self.end)
+        abs_sub(self.start, self.end)
     }
 }
 

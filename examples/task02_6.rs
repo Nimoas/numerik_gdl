@@ -1,9 +1,9 @@
 use gnuplot::Coordinate::Graph;
 use gnuplot::PlotOption::{Caption, Color};
 use gnuplot::{AxesCommon, Figure};
-use ngdl_rust::abs;
 use ngdl_rust::definitions::{Function2D, InitialValueProblem};
 use ngdl_rust::euler_explicit::explicit_euler_test_run;
+use num::abs_sub;
 use std::error::Error;
 use std::f64::consts::E;
 use std::fs::create_dir_all;
@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let approximations = explicit_euler_test_run(ivp, &hs, 0.5);
 
-    let abs_errors: Vec<f64> = approximations.iter().map(|x| abs!(exact - *x)).collect();
+    let abs_errors: Vec<f64> = approximations.iter().map(|x| abs_sub(exact, *x)).collect();
 
     // This comes from the formula on task 6.
     // |f| = 2 and |f'| = 4 on the interval.

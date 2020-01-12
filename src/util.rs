@@ -92,14 +92,6 @@ macro_rules! fac {
     };
 }
 
-/// abs(x)
-#[macro_export]
-macro_rules! abs {
-    ($name: expr) => {
-        $name.abs()
-    };
-}
-
 /// sqrt(x)
 #[macro_export]
 macro_rules! sqrt {

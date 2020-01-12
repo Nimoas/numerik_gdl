@@ -6,12 +6,13 @@ use ngdl_rust::definitions::{
     SimpleDifferentiableFunction2D,
 };
 use ngdl_rust::euler_explicit::{explicit_euler, explicit_euler_interval};
+use ngdl_rust::exp;
 use ngdl_rust::modified_explicit_euler::{
     modified_explicit_euler, modified_explicit_euler_interval,
 };
 use ngdl_rust::plot_util::{plot_line_on, plot_line_points_on};
 use ngdl_rust::util::{get_convergence_order, sample_function};
-use ngdl_rust::{abs, exp};
+use num::abs_sub;
 use std::error::Error;
 use std::f64::consts::E;
 use std::fs::create_dir_all;
@@ -85,11 +86,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let normal_abs_error: Vec<f64> = normal_euler_results
         .iter()
-        .map(|aprox| abs!(aprox - exact_at_2))
+        .map(|aprox| abs_sub(*aprox, exact_at_2))
         .collect();
     let modified_abs_error: Vec<f64> = modified_euler_results
         .iter()
-        .map(|aprox| abs!(aprox - exact_at_2))
+        .map(|aprox| abs_sub(*aprox, exact_at_2))
         .collect();
 
     println!(
