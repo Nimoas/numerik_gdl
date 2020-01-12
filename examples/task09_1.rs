@@ -5,6 +5,7 @@ use gnuplot::{AxesCommon, Figure};
 use ngdl_rust::adams_bashforth::{make_adams_bashforth_2_method, make_adams_bashforth_3_method};
 use ngdl_rust::definitions::{Function, InitialValueSystemProblem, Point2D, SampleableFunction};
 use ngdl_rust::euler_explicit::make_explicit_euler_method_system;
+use ngdl_rust::exp;
 use ngdl_rust::explicit_runge_kutta::{
     make_2nd_order_runge_kutta, make_classic_runge_kutta, make_heun_method,
 };
@@ -13,12 +14,12 @@ use ngdl_rust::milne_simpson::make_milne_simpson_method;
 use ngdl_rust::nystroem::make_nystroem_3_method;
 use ngdl_rust::plot_util::plot_line_points_on;
 use ngdl_rust::util::{get_all_convergence_orders, get_convergence_order};
-use ngdl_rust::{exp, powi};
+use num::abs_sub;
+use num::pow;
 use std::error::Error;
 use std::f64::consts::E;
 use std::fs::create_dir_all;
 use std::ops::Add;
-use num::abs_sub;
 
 const IMAGE_DIR: &str = "./img_task09_1/";
 
@@ -94,12 +95,12 @@ macro_rules! test_method {
 fn main() -> Result<(), Box<dyn Error>> {
     create_dir_all(IMAGE_DIR)?;
 
-    let exact_fn = |t: f64| exp!(1.0 - powi!(t, 3) / 3.0);
+    let exact_fn = |t: f64| exp!(1.0 - pow(t, 3) / 3.0);
     let exact_val: f64 = exact_fn(T_TARGET);
     println!("Exact value at {}: {}", T_TARGET, exact_val);
 
     // Start at 3, because 1/2 and 1/4 make no sense for h
-    let hs: Vec<f64> = (3..20).map(|i| 1.0 / powi!(2.0f64, i)).collect();
+    let hs: Vec<f64> = (3..20).map(|i| 1.0 / pow(2.0f64, i)).collect();
 
     println!("\nTesting Adams Bashforth 2nd order");
     test_method!(

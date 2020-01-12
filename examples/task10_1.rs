@@ -1,7 +1,7 @@
 use ngdl_rust::definitions::{Function, InitialValueSystemProblem, SampleableFunction};
 use ngdl_rust::explicit_runge_kutta::make_classic_runge_kutta;
-use ngdl_rust::powi;
 use num::abs_sub;
+use num::pow;
 use std::error::Error;
 
 //const IMAGE_DIR: &str = "./img_task10_1/";
@@ -41,11 +41,10 @@ fn test_runge_kutta() {
 }
 
 fn create_problem() -> InitialValueSystemProblem<Function<(f64, Vec<f64>)>> {
-    let dfx: Function<(f64, Vec<f64>)> = |(_t, r)| -0.04 * r[0] + powi!(10.0f64, 4) * r[1] * r[2];
-    let dfy: Function<(f64, Vec<f64>)> = |(_t, r)| {
-        0.04 * r[0] - powi!(10.0f64, 4) * r[1] * r[2] - 3.0 * powi!(10.0f64, 7) * r[1] * r[1]
-    };
-    let dfz: Function<(f64, Vec<f64>)> = |(_t, r)| 3.0 * powi!(10.0f64, 7) * r[1] * r[1];
+    let dfx: Function<(f64, Vec<f64>)> = |(_t, r)| -0.04 * r[0] + pow(10.0f64, 4) * r[1] * r[2];
+    let dfy: Function<(f64, Vec<f64>)> =
+        |(_t, r)| 0.04 * r[0] - pow(10.0f64, 4) * r[1] * r[2] - 3.0 * pow(10.0f64, 7) * r[1] * r[1];
+    let dfz: Function<(f64, Vec<f64>)> = |(_t, r)| 3.0 * pow(10.0f64, 7) * r[1] * r[1];
 
     InitialValueSystemProblem::new(0.0, vec![1.0, 0.0, 0.0], vec![dfx, dfy, dfz])
 }

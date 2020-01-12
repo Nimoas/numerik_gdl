@@ -5,7 +5,8 @@ use ngdl_rust::definitions::{Function, InitialValueSystemProblem, ODEMethod, Poi
 use ngdl_rust::euler_explicit::make_explicit_euler_method_system;
 use ngdl_rust::explicit_runge_kutta::make_classic_runge_kutta;
 use ngdl_rust::plot_util::{plot_line_on, plot_line_points_on};
-use ngdl_rust::{powi, sqrt};
+use ngdl_rust::sqrt;
+use num::pow;
 use std::error::Error;
 use std::fs::create_dir_all;
 use std::ops::Add;
@@ -104,60 +105,60 @@ fn create_problem() -> InitialValueSystemProblem<Function<(f64, Vec<f64>)>> {
 
     let ddfx_e: Function<(f64, Vec<f64>)> = |(_t, r)| {
         (-1.0 * GRAVITY * MASS_EARTH * MASS_MARS * (r[0] - r[2])
-            / powi!(sqrt!(powi!(r[0] - r[2], 2) + powi!(r[1] - r[3], 2)), 3)
+            / pow(sqrt!(pow(r[0] - r[2], 2) + pow(r[1] - r[3], 2)), 3)
             + GRAVITY * MASS_SUN * MASS_EARTH * (r[4] - r[0])
-                / powi!(sqrt!(powi!(r[0] - r[4], 2) + powi!(r[1] - r[5], 2)), 3))
+                / pow(sqrt!(pow(r[0] - r[4], 2) + pow(r[1] - r[5], 2)), 3))
             / MASS_EARTH
     };
     let ddfy_e: Function<(f64, Vec<f64>)> = |(_t, r)| {
         (-1.0 * GRAVITY * MASS_EARTH * MASS_MARS * (r[1] - r[3])
-            / powi!(sqrt!(powi!(r[0] - r[2], 2) + powi!(r[1] - r[3], 2)), 3)
+            / pow(sqrt!(pow(r[0] - r[2], 2) + pow(r[1] - r[3], 2)), 3)
             + GRAVITY * MASS_SUN * MASS_EARTH * (r[5] - r[1])
-                / powi!(sqrt!(powi!(r[0] - r[4], 2) + powi!(r[1] - r[5], 2)), 3))
+                / pow(sqrt!(pow(r[0] - r[4], 2) + pow(r[1] - r[5], 2)), 3))
             / MASS_EARTH
     };
     let ddfx_m: Function<(f64, Vec<f64>)> = |(_t, r)| {
         (GRAVITY * MASS_EARTH * MASS_MARS * (r[0] - r[2])
-            / powi!(sqrt!(powi!(r[0] - r[2], 2) + powi!(r[1] - r[3], 2)), 3)
+            / pow(sqrt!(pow(r[0] - r[2], 2) + pow(r[1] - r[3], 2)), 3)
             + GRAVITY * MASS_SUN * MASS_MARS * (r[4] - r[2])
-                / powi!(sqrt!(powi!(r[4] - r[2], 2) + powi!(r[5] - r[3], 2)), 3))
+                / pow(sqrt!(pow(r[4] - r[2], 2) + pow(r[5] - r[3], 2)), 3))
             / MASS_MARS
     };
     let ddfy_m: Function<(f64, Vec<f64>)> = |(_t, r)| {
         (GRAVITY * MASS_EARTH * MASS_MARS * (r[1] - r[3])
-            / powi!(sqrt!(powi!(r[0] - r[2], 2) + powi!(r[1] - r[3], 2)), 3)
+            / pow(sqrt!(pow(r[0] - r[2], 2) + pow(r[1] - r[3], 2)), 3)
             + GRAVITY * MASS_SUN * MASS_MARS * (r[5] - r[3])
-                / powi!(sqrt!(powi!(r[4] - r[2], 2) + powi!(r[5] - r[3], 2)), 3))
+                / pow(sqrt!(pow(r[4] - r[2], 2) + pow(r[5] - r[3], 2)), 3))
             / MASS_MARS
     };
     let ddfx_s: Function<(f64, Vec<f64>)> = |(_t, r)| {
         (-1.0 * GRAVITY * MASS_SUN * MASS_EARTH * (r[4] - r[0])
-            / powi!(sqrt!(powi!(r[4] - r[0], 2) + powi!(r[5] - r[1], 2)), 3)
+            / pow(sqrt!(pow(r[4] - r[0], 2) + pow(r[5] - r[1], 2)), 3)
             + -1.0 * GRAVITY * MASS_SUN * MASS_MARS * (r[4] - r[2])
-                / powi!(sqrt!(powi!(r[4] - r[2], 2) + powi!(r[5] - r[3], 2)), 3))
+                / pow(sqrt!(pow(r[4] - r[2], 2) + pow(r[5] - r[3], 2)), 3))
             / MASS_SUN
     };
     let ddfy_s: Function<(f64, Vec<f64>)> = |(_t, r)| {
         (-1.0 * GRAVITY * MASS_SUN * MASS_EARTH * (r[5] - r[1])
-            / powi!(sqrt!(powi!(r[4] - r[0], 2) + powi!(r[5] - r[1], 2)), 3)
+            / pow(sqrt!(pow(r[4] - r[0], 2) + pow(r[5] - r[1], 2)), 3)
             + -1.0 * GRAVITY * MASS_SUN * MASS_MARS * (r[5] - r[3])
-                / powi!(sqrt!(powi!(r[4] - r[2], 2) + powi!(r[5] - r[3], 2)), 3))
+                / pow(sqrt!(pow(r[4] - r[2], 2) + pow(r[5] - r[3], 2)), 3))
             / MASS_SUN
     };
 
     InitialValueSystemProblem::new(
         0.0,
         vec![
-            150.0 * powi!(10.0f64, 9),
+            150.0 * pow(10.0f64, 9),
             0.0,
-            228.0 * powi!(10.0f64, 9),
+            228.0 * pow(10.0f64, 9),
             0.0,
             0.0,
             0.0,
             0.0, // from here ddf
-            29.0 * powi!(10.0f64, 3),
+            29.0 * pow(10.0f64, 3),
             0.0,
-            24.0 * powi!(10.0f64, 3),
+            24.0 * pow(10.0f64, 3),
             0.0,
             0.0,
         ],

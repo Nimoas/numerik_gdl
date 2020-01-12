@@ -1,5 +1,6 @@
 use crate::definitions::{Closure1D, Function1D, Interval, Point2D};
-use crate::{ln, powi, sqrt};
+use crate::{ln, sqrt};
+use num::pow;
 
 /// Takes the interval and splits it into n sub-intervals.
 /// Returns the resulting n+1 boundary points.
@@ -80,7 +81,7 @@ pub fn make_zero_vec(len: usize) -> Vec<f64> {
 pub fn sse(v1: &[Point2D], v2: &[Point2D]) -> f64 {
     v1.iter()
         .zip(v2.iter())
-        .map(|(p1, p2)| powi!(p1.x - p2.x, 2) + powi!(p1.y - p2.y, 2))
+        .map(|(p1, p2)| pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2))
         .sum()
 }
 
@@ -113,14 +114,6 @@ macro_rules! ln {
 macro_rules! powf {
     ($name: expr, $exponent: expr) => {
         $name.powf($exponent)
-    };
-}
-
-/// x^n with n some kind of int
-#[macro_export]
-macro_rules! powi {
-    ($name: expr, $exponent: expr) => {
-        $name.powi($exponent)
     };
 }
 
