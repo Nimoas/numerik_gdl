@@ -4,6 +4,7 @@
 
 /// Implementations for the explicit Adams Bashforth methods.
 pub mod adams_bashforth;
+mod constants;
 /// Contains generic definitions and helper methods
 pub mod definitions;
 /// Implementation of the explicit euler method
@@ -29,5 +30,10 @@ pub mod nystroem;
 pub mod plot_util;
 /// Numeric quadrature with several methods
 pub mod quadrature;
+/// Functions to sample stability functions to get stability areas.
+pub mod stability_area;
 /// Helpful helpers for common computations
 pub mod util;
+
+/// Re-export constants at top level.
+pub use constants::*;

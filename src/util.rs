@@ -84,6 +84,14 @@ pub fn sse(v1: &[Point2D], v2: &[Point2D]) -> f64 {
         .sum()
 }
 
+/// x!
+#[macro_export]
+macro_rules! fac {
+    ($name: expr) => {
+        (1..=$name).fold(1, |acc, n| acc * n)
+    };
+}
+
 /// abs(x)
 #[macro_export]
 macro_rules! abs {

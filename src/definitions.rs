@@ -249,13 +249,18 @@ impl Point2D {
 }
 
 /// Inclusive interval of the form [a, b] < R
-#[derive(Copy, Clone, Debug, new)]
+#[derive(Copy, Clone, Debug)]
 pub struct Interval {
     start: f64,
     end: f64,
 }
 
 impl Interval {
+    /// Not derived to make it const.
+    pub const fn new(start: f64, end: f64) -> Interval {
+        Interval { start, end }
+    }
+
     /// Get first value in interval
     pub fn start(&self) -> f64 {
         self.start
