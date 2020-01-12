@@ -1,10 +1,9 @@
-use crate::ceil;
 use crate::definitions::{
     DifferentiableFunction, InitialValueSystemProblem, ODEMethod, Point2D, SampleableFunction,
     SampledDerivative,
 };
+use crate::{abs, ceil};
 use derive_new::*;
-use num::abs_sub;
 use std::f64::EPSILON;
 
 pub trait OneStepMethodStep<FT: SampleableFunction<(f64, Vec<f64>), f64>> {
@@ -73,7 +72,7 @@ impl<FT: SampleableFunction<(f64, Vec<f64>), f64>, STEP: OneStepMethodStep<FT>>
         // We go a step farther, because we want the right slope
         let results = self.interval(t_target + self.h, 0);
         // Get the first x coord that is strictly larger than the target
-        let idx = if abs_sub(t_target, self.ivp.start_time) > EPSILON {
+        let idx = if abs!(t_target - self.ivp.start_time) > EPSILON {
             ceil!((t_target - self.ivp.start_time) / self.h)
         } else {
             1

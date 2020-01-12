@@ -9,8 +9,7 @@ use ngdl_rust::euler_explicit::explicit_euler_interval_test_run;
 use ngdl_rust::implicit_euler::implicit_euler_interval_test_run;
 use ngdl_rust::plot_util::{plot_line_on, plot_line_points_on, plot_points_on};
 use ngdl_rust::util::sample_function;
-use ngdl_rust::{cos, exp, sin};
-use num::abs_sub;
+use ngdl_rust::{abs, cos, exp, sin};
 use std::error::Error;
 use std::f64::consts::E;
 use std::fs::create_dir_all;
@@ -52,7 +51,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             ps.iter()
                 .map(|p| Point2D {
                     x: p.x,
-                    y: abs_sub(p.y, exact(p.x)),
+                    y: abs!(p.y - exact(p.x)),
                 })
                 .collect()
         })
@@ -63,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             ps.iter()
                 .map(|p| Point2D {
                     x: p.x,
-                    y: abs_sub(p.y, exact(p.x)),
+                    y: abs!(p.y - exact(p.x)),
                 })
                 .collect()
         })

@@ -13,12 +13,11 @@ use ngdl_rust::milne_simpson::make_milne_simpson_method;
 use ngdl_rust::nystroem::make_nystroem_3_method;
 use ngdl_rust::plot_util::plot_line_points_on;
 use ngdl_rust::util::{get_all_convergence_orders, get_convergence_order};
-use ngdl_rust::{exp, powi};
+use ngdl_rust::{abs, exp, powi};
 use std::error::Error;
 use std::f64::consts::E;
 use std::fs::create_dir_all;
 use std::ops::Add;
-use num::abs_sub;
 
 const IMAGE_DIR: &str = "./img_task09_1/";
 
@@ -34,7 +33,7 @@ macro_rules! test_method {
                 })
             })
             .map(|method| method.value_at(T_TARGET))
-            .map(|approx| abs_sub(approx[0], $exact_value))
+            .map(|approx| abs!(approx[0] - $exact_value))
             .collect();
         let conv_euler: Vec<f64> = get_all_convergence_orders(&err_euler.clone(), $hs);
         println!(
@@ -50,7 +49,7 @@ macro_rules! test_method {
                 })
             })
             .map(|method| method.value_at(T_TARGET))
-            .map(|approx| abs_sub(approx[0], $exact_value))
+            .map(|approx| abs!(approx[0] - $exact_value))
             .collect();
         let conv_2nd: Vec<f64> = get_all_convergence_orders(&err_2nd.clone(), $hs);
         println!(
@@ -62,7 +61,7 @@ macro_rules! test_method {
             .iter()
             .map(|h| $method(create_problem, *h, |ivp, h| make_heun_method(ivp, h)))
             .map(|method| method.value_at(T_TARGET))
-            .map(|approx| abs_sub(approx[0], $exact_value))
+            .map(|approx| abs!(approx[0] - $exact_value))
             .collect();
         let conv_heun: Vec<f64> = get_all_convergence_orders(&err_heun.clone(), $hs);
         println!(
@@ -78,7 +77,7 @@ macro_rules! test_method {
                 })
             })
             .map(|method| method.value_at(T_TARGET))
-            .map(|approx| abs_sub(approx[0], $exact_value))
+            .map(|approx| abs!(approx[0] - $exact_value))
             .collect();
         let conv_crk: Vec<f64> = get_all_convergence_orders(&err_crk.clone(), $hs);
         println!(

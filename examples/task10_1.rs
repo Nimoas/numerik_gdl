@@ -1,7 +1,6 @@
 use ngdl_rust::definitions::{Function, InitialValueSystemProblem, SampleableFunction};
 use ngdl_rust::explicit_runge_kutta::make_classic_runge_kutta;
-use ngdl_rust::powi;
-use num::abs_sub;
+use ngdl_rust::{abs, powi};
 use std::error::Error;
 
 //const IMAGE_DIR: &str = "./img_task10_1/";
@@ -35,9 +34,9 @@ fn test_runge_kutta() {
     println!("\ty'(t_end) = {}", data[1]);
     println!("\tz'(t_end) = {}", data[2]);
 
-    println!("\n\terror_x = {:e}", abs_sub(data[0], EXACT_X));
-    println!("\terror_y = {:e}", abs_sub(data[1], EXACT_Y));
-    println!("\terror_z = {:e}", abs_sub(data[2], EXACT_Z));
+    println!("\n\terror_x = {:e}", abs!(data[0] - EXACT_X));
+    println!("\terror_y = {:e}", abs!(data[1] - EXACT_Y));
+    println!("\terror_z = {:e}", abs!(data[2] - EXACT_Z));
 }
 
 fn create_problem() -> InitialValueSystemProblem<Function<(f64, Vec<f64>)>> {
