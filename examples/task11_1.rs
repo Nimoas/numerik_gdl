@@ -93,7 +93,7 @@ fn plot_stability_area_rk_b_1() {
 
 fn plot_stability_area_rk_sdirk() {
     let r: Function<Complex64> = |z| {
-        (ONE + z / (GAMMA * z - ONE) + z * (TWO * GAMMA - ONE) / (TWO * (GAMMA * z - ONE).powu(2)))
+        (ONE - z / (GAMMA * z - ONE) + z * (TWO * GAMMA - ONE) / (TWO * (GAMMA * z - ONE).powu(2)))
             .norm()
     };
 
