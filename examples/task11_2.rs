@@ -23,19 +23,18 @@ fn main() -> Result<(), Box<dyn Error>> {
     plot_stability_region("adam_bashforth_1", "Adam-Bashforth k=1", &pts, p0, p1);
 
     let (pts, p0, p1) = make_adams_wok(
-        &vec![1.0, -1.0, 0.0, 0.0],
-        &vec![0.0, 23.0 / 12.0, 16.0 / 12.0, 5.0 / 12.0],
+        &vec![1.0, -1.0, 0.0],
+        &vec![23.0 / 12.0, -16.0 / 12.0, 5.0 / 12.0],
     );
     plot_stability_region("adam_bashforth_3", "Adam-Bashforth k=3", &pts, p0, p1);
 
     let (pts, p0, p1) = make_adams_wok(
-        &vec![1.0, -1.0, 0.0, 0.0, 0.0, 0.0],
+        &vec![1.0, -1.0, 0.0, 0.0, 0.0],
         &vec![
-            0.0,
             1901.0 / 720.0,
-            2774.0 / 720.0,
+            -2774.0 / 720.0,
             2616.0 / 720.0,
-            1274.0 / 720.0,
+            -1274.0 / 720.0,
             251.0 / 720.0,
         ],
     );
@@ -71,9 +70,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         &vec![
             251.0 / 720.0,
             646.0 / 720.0,
-            264.0 / 720.0,
+            -264.0 / 720.0,
             106.0 / 720.0,
-            19.0 / 720.0,
+            -19.0 / 720.0,
         ],
     );
     plot_stability_region("adam_moulton_5", "Adam-Moulton k=5", &pts, p0, p1);
