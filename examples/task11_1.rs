@@ -18,6 +18,10 @@ const GAMMA: Complex64 = Complex64::new(
     0.788675134594812882254574390250978727823800875635063438009,
     0.0,
 );
+const GAMMA_NEG: Complex64 = Complex64::new(
+    0.211324865405187117745425609749021272176199124364936561990,
+    0.0,
+);
 
 const RE_INTERVAL: Interval = Interval::new(-4.0, 3.0);
 const IM_INTERVAL: Interval = Interval::new(-3.5, 3.5);
@@ -34,6 +38,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     plot_stability_area_implicit_euler();
     plot_stability_area_implicit_midpoint();
     plot_stability_area_rk_sdirk();
+    plot_stability_area_rk_sdirk_neg();
 
     Ok(())
 }
@@ -100,6 +105,17 @@ fn plot_stability_area_rk_sdirk() {
     let stability_region = sample_stability_area(r, NUM_SAMPLES, RE_INTERVAL, IM_INTERVAL);
 
     plot_stability_region("sdirk", "SDIRK 3rd order", &stability_region);
+}
+
+fn plot_stability_area_rk_sdirk_neg() {
+    let r: Function<Complex64> = |z| {
+        (ONE - z / (GAMMA_NEG * z - ONE) + z * (TWO * GAMMA_NEG - ONE) / (TWO * (GAMMA_NEG * z - ONE).powu(2)))
+            .norm()
+    };
+
+    let stability_region = sample_stability_area(r, NUM_SAMPLES, RE_INTERVAL, IM_INTERVAL);
+
+    plot_stability_region("sdirk_2", "SDIRK 3rd order (other Gamma)", &stability_region);
 }
 
 fn plot_stability_area_implicit_euler() {
