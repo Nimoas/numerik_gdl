@@ -109,13 +109,18 @@ fn plot_stability_area_rk_sdirk() {
 
 fn plot_stability_area_rk_sdirk_neg() {
     let r: Function<Complex64> = |z| {
-        (ONE - z / (GAMMA_NEG * z - ONE) + z * (TWO * GAMMA_NEG - ONE) / (TWO * (GAMMA_NEG * z - ONE).powu(2)))
-            .norm()
+        (ONE - z / (GAMMA_NEG * z - ONE)
+            + z * (TWO * GAMMA_NEG - ONE) / (TWO * (GAMMA_NEG * z - ONE).powu(2)))
+        .norm()
     };
 
     let stability_region = sample_stability_area(r, NUM_SAMPLES, RE_INTERVAL, IM_INTERVAL);
 
-    plot_stability_region("sdirk_2", "SDIRK 3rd order (other Gamma)", &stability_region);
+    plot_stability_region(
+        "sdirk_2",
+        "SDIRK 3rd order (other Gamma)",
+        &stability_region,
+    );
 }
 
 fn plot_stability_area_implicit_euler() {

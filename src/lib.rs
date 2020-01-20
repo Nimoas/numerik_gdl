@@ -37,3 +37,5 @@ pub mod util;
 
 /// Re-export constants at top level.
 pub use constants::*;
+/// Embedded ERK methods
+pub mod embedded_rk;
