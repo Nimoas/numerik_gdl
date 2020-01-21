@@ -11,7 +11,7 @@ const IMAGE_DIR: &str = "./img_task12_1/";
 const EPSILON: f64 = 10.0;
 const H_START: f64 = 0.1;
 const TOLERANCE: f64 = 0.0001;
-const T_TARGET: f64 = 1.5;
+const T_TARGET: f64 = 1.2;
 
 fn main() -> Result<(), Box<dyn Error>> {
     create_dir_all(IMAGE_DIR)?;
@@ -58,10 +58,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|(t2, t1)| t2 - t1)
         .collect();
 
-    let hs_to_plot: Vec<_> = hs
+    let hs_to_plot: Vec<_> = xs
         .iter()
-        .enumerate()
-        .map(|(x, y)| Point2D::new(x as f64, *y))
+        .zip(hs)
+        .map(|(x, y)| Point2D::new(*x, y))
         .collect();
 
     let hs_dop: Vec<f64> = approximation_dop
@@ -72,10 +72,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map(|(t2, t1)| t2 - t1)
         .collect();
 
-    let hs_to_plot_dop: Vec<_> = hs_dop
+    let hs_to_plot_dop: Vec<_> = xs_dop
         .iter()
-        .enumerate()
-        .map(|(x, y)| Point2D::new(x as f64, *y))
+        .zip(hs_dop)
+        .map(|(x, y)| Point2D::new(*x, y))
         .collect();
 
     let mut fg = Figure::new();

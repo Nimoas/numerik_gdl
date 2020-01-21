@@ -17,7 +17,6 @@ pub struct EmbeddedExplicitRungeKuttaMethod<FT: SampleableFunction<(f64, Vec<f64
     lower_order: usize,
     current_h: f64,
     make_ivp: fn() -> InitialValueSystemProblem<FT>,
-    current_err: f64,
     tolerance: f64,
 }
 
@@ -37,27 +36,18 @@ impl<FT: SampleableFunction<(f64, Vec<f64>), f64>> EmbeddedExplicitRungeKuttaMet
         );
         let val2 = rk2.value_at(t + self.current_h);
 
-        let err = abs!(val1[0] - val2[0]) / (1.0 + abs!(last_values[0]));
+        let err = val1.iter().zip(val2.iter()).zip(last_values.iter())
+            .map(|((v1, v2), l)| abs!(v1 - v2) / (1.0 + abs!(l)))
+            .fold(0.0, f64::max);
+
+        self.current_h = 2.0f64.min(
+            0.5f64
+                .max(0.9 * powf!(self.tolerance / err, 1.0 / (self.lower_order as f64 + 1.0))),
+        ) * self.current_h;
 
         if err <= self.tolerance {
-            self.current_h = 2.0f64.min(
-                0.5f64
-                    .max(0.9 * powf!(self.tolerance / err, 1.0 / (self.lower_order as f64 + 1.0))),
-            ) * self.current_h;
-            self.current_err = 0.0;
             return val1;
         }
-
-        if err > self.current_err {
-            self.current_err = err;
-        }
-        self.current_h = 2.0f64.min(0.5f64.max(
-            0.9 * powf!(
-                self.tolerance / self.current_err,
-                1.0 / (self.lower_order as f64 + 1.0)
-            ),
-        )) * self.current_h;
-
         self.step(t, last_values)
     }
 
@@ -109,7 +99,6 @@ pub fn make_embedded_explicit_runge_kutta_with_tableau<
         lower_order,
         h_start,
         create_ivp,
-        0.0,
         tolerance,
     )
 }
